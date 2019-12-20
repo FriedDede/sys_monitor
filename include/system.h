@@ -9,7 +9,7 @@
 
 class System {
  public:
-  std::vector<std::string> procfileread(std::string);
+  std::vector<std::string> Sysfileread(std::string);
   Processor& Cpu();                   // TODO: See src/system.cpp
   int TotalProcesses(); 
   std::vector<Process>& Processes();  
