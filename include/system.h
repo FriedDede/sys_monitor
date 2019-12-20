@@ -9,6 +9,7 @@
 
 class System {
  public:
+  std::vector<std::string> procfileread(std::string);
   Processor& Cpu();                   // TODO: See src/system.cpp
   int TotalProcesses(); 
   std::vector<Process>& Processes();  
@@ -21,7 +22,7 @@ class System {
   std::string Hostname();
   std::vector<Process> processes_;
  private:
-  Processor cpu_ = {};
+  Processor cpu_ ;
   
 };
 

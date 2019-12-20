@@ -21,6 +21,21 @@ using std::size_t;
 using std::string;
 using std::vector;
 
+
+vector<string> System::Sysfileread(std::string filename){
+       std::vector<std::string> words;
+        std::string path= "/proc/" + filename;   
+        char fln[path.size() + 1];
+        path.copy(fln, path.size() +1);
+        fln[path.size()]= '\0';
+        std::ifstream proc_Sys (fln, std::ifstream::in);
+        std::string str;
+        while (proc_Sys >> str){                  
+            words.push_back(str);
+        }
+        proc_Sys.close();        
+        return words;
+}
 // TODO: Return the system's CPU
 Processor& System::Cpu() {
     return cpu_; 

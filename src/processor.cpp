@@ -5,8 +5,6 @@
 #include <unistd.h>
 #include <vector>
 
-//TODO: rewrite this function as partial_usage[process] sum.
-
 std::vector<size_t> get_cpu_times() {
     std::ifstream proc_stat("/proc/stat");
     proc_stat.ignore(5, ' '); // Skip the 'cpu' prefix.
@@ -22,28 +20,17 @@ bool get_cpu_times(size_t &idle_time, size_t &total_time) {
     total_time = std::accumulate(cpu_times.begin(), cpu_times.end(), 0);
     return true;
 }
-
-// TODO: Return the aggregate CPU utilization
-// TODO: check sta cagata
 float Processor::Utilization() {  
+    size_t idle_time, total_time; get_cpu_times(idle_time, total_time);
+    const float idle_time_delta = idle_time - Processor::CPU_Previous_Idle;
+    const float total_time_delta = total_time - Processor::CPU_Previous_Total;
+    const float utilization = (1.0 - idle_time_delta / total_time_delta);
+    Processor::CPU_Previous_Idle = idle_time;
+    Processor::CPU_Previous_Total = total_time;
+    return utilization;
     
-    size_t previous_idle_time=0, previous_total_time=0;
-    for (size_t idle_time, total_time; get_cpu_times(idle_time, total_time);) {
-        const float idle_time_delta = idle_time - previous_idle_time;
-        const float total_time_delta = total_time - previous_total_time;
-        const float utilization = (1.0 - idle_time_delta / total_time_delta);
-        return utilization;
-        previous_idle_time = idle_time;
-        previous_total_time = total_time;
-    }
-    /*
-    size_t previous_idle_time=0, previous_total_time=0;
-    size_t idle_time=0,total_time=0;
-    get_cpu_times(idle_time,total_time);
-    previous_idle_time=idle_time;
-    previous_idle_time=total_time;
-    get_cpu_times(idle_time,total_time);
-    float utilization = (1.0 - (idle_time-previous_idle_time)/(total_time-previous_total_time));
-    return utilization;*/
 }
 
+int Processor::Cpu() {
+    return Processor::Cpu_Count;
+}
