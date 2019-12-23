@@ -3,10 +3,7 @@
 
 #include <string>
 #include <vector>
-/*
-Basic class for Process representation
-It contains relevant attributes as shown below
-*/
+/*Basic class for Process representation, It contains relevant attributes as shown below*/
 class Process {
  public:
   std::vector<std::string> procfileread(std::string);
@@ -19,13 +16,9 @@ class Process {
   std::string Ram();                       // TODO: See src/process.cpp
   long int UpTime();
   std::string status();                       // TODO: See src/process.cpp
-
   bool exist();
   int process_ID;
-  std::string status_buffer;
- 
- private:
-  
+  std::string status_buffer; 
+private:  
 };
-
 #endif

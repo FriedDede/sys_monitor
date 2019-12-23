@@ -27,8 +27,7 @@ vector<string> Process::procfileread(std::string filename){
         while (proc_pid_status >> str){                  
             words.push_back(str);
         }
-        proc_pid_status.close();
-        
+        proc_pid_status.close();        
         return words;
     }
     else

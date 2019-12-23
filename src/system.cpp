@@ -23,19 +23,37 @@ using std::vector;
 
 
 vector<string> System::Sysfileread(std::string filename){
-       std::vector<std::string> words;
+    std::vector<std::string> words;
         std::string path= "/proc/" + filename;   
         char fln[path.size() + 1];
         path.copy(fln, path.size() +1);
         fln[path.size()]= '\0';
         std::ifstream proc_Sys (fln, std::ifstream::in);
         std::string str;
-        while (proc_Sys >> str){                  
-            words.push_back(str);
-        }
-        proc_Sys.close();        
-        return words;
+    while (proc_Sys >> str){                  
+        words.push_back(str);
+    }
+    proc_Sys.close();        
+    return words;
 }
+
+std::string System::OperatingSystem() { 
+    std::string file="sys/kernel/version";
+    std::vector<std::string> words = System::Sysfileread(file);
+    return words[0]; 
+}
+std::string System::Hostname() { 
+    std::string file="sys/kernel/hostname";
+    std::vector<std::string> words = System::Sysfileread(file);
+    return words[0]; 
+}
+
+std::string System::Kernel() {
+    std::string file= "version";
+    std::vector<std::string> words = System::Sysfileread(file);
+    return words[2]; 
+}
+
 // TODO: Return the system's CPU
 Processor& System::Cpu() {
     return cpu_; 
@@ -81,27 +99,6 @@ vector<Process>& System::Processes() {
     return processes_;
 }
 
-// TODO: Return the system's kernel identifier (string)
-std::string System::Kernel() {
-
-    std::vector<std::string> words;
-    
-    std::string path= "/proc/version";  
-    char fln[path.size() + 1];
-    path.copy(fln, path.size() +1);
-    fln[path.size()]= '\0';
-    std::ifstream proc_pid_status (fln, std::ifstream::in);
-    std::string str;
-
-    while (proc_pid_status >> str){                  
-        words.push_back(str);
-    }
-    proc_pid_status.close(); 
-
-    return words[2]; 
-}
-
-
 float System::MemoryUtilization() { 
     struct sysinfo info;
     sysinfo(&info);
@@ -122,43 +119,6 @@ float System::Cpumean1m() {
     return avgload;
 }
 
-// TODO: Return the operating system name
-std::string System::OperatingSystem() { 
-    std::vector<std::string> words;
-    
-    std::string path= "/proc/sys/kernel/version";  
-    char fln[path.size() + 1];
-    path.copy(fln, path.size() +1);
-    fln[path.size()]= '\0';
-    std::ifstream proc_pid_status (fln, std::ifstream::in);
-    std::string str;
-
-    while (proc_pid_status >> str){                  
-        words.push_back(str);
-    }
-    proc_pid_status.close(); 
-
-    return words[0]; 
-}
-
-std::string System::Hostname() { 
-    std::vector<std::string> words;
-    
-    std::string path= "/proc/sys/kernel/hostname";  
-    char fln[path.size() + 1];
-    path.copy(fln, path.size() +1);
-    fln[path.size()]= '\0';
-    std::ifstream proc_pid_status (fln, std::ifstream::in);
-    std::string str;
-
-    while (proc_pid_status >> str){                  
-        words.push_back(str);
-    }
-    proc_pid_status.close(); 
-
-    return words[0]; 
-}
-// TODO: Return the number of processes actively running on the system
 int System::RunningProcesses() {    
     int running_counter=0;
     std::string running_status= "R(running)";

@@ -116,7 +116,7 @@ void NCursesDisplay::Display(System& system,int n) {
   int x_max{getmaxx(stdscr)};
   WINDOW* system_window = newwin(11, x_max - 1, 0, 0);
   WINDOW* process_window =
-      newwin(10 + n, x_max - 1, system_window->_maxy + 1, 0);
+      newwin(10 + system.Processes().size(), x_max - 1, system_window->_maxy + 1, 0);
 
   while (1) {
     init_pair(1, COLOR_BLUE, COLOR_BLACK);
