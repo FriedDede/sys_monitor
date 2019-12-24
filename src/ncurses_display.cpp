@@ -65,17 +65,18 @@ void NCursesDisplay::DisplaySystem(System& system, WINDOW* window) {
 void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,WINDOW* window, int n) {
     
     int row{0};
-
     int const pid_column{2};
-    int const user_column{7};
-    int const cpu_column{14};
-    int const ram_column{25};
-    int const time_column{35};
-    int const status_column{45};
-    int const command_column{60};
+    int const Ppid_column{11};
+    int const user_column{20};
+    int const cpu_column{27};
+    int const ram_column{35};
+    int const time_column{44};
+    int const status_column{54};
+    int const command_column{67};
     
     wattron(window, COLOR_PAIR(2));
     mvwprintw(window, ++row, pid_column, "PID");
+    mvwprintw(window, row, Ppid_column, "PPID");
     mvwprintw(window, row, user_column, "UID");
     mvwprintw(window, row, cpu_column, "CPU[%%]");
     mvwprintw(window, row, ram_column, "RAM[KB]");
@@ -89,9 +90,10 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,WINDOW* wi
       if (processes[i].exist())
       {
       mvwprintw(window, ++row, pid_column, to_string(processes[i].Pid()).c_str());
+      mvwprintw(window, row, Ppid_column, "     ");
+      mvwprintw(window, row, Ppid_column, processes[i].Parent_Pid().c_str());
       mvwprintw(window, row, user_column, "    ");
       mvwprintw(window, row, user_column, processes[i].User().c_str());
-
       float cpu = processes[i].CpuUtilization() * 100;
       mvwprintw(window, row, cpu_column, to_string(cpu).substr(0, 4).c_str());
       mvwprintw(window, row, ram_column, "        ");

@@ -7,7 +7,8 @@
 class Process {
  public:
   std::vector<std::string> procfileread(std::string);
-  int Pid();                               
+  int Pid();        
+  std::string Parent_Pid();                       
   int Pid_Insec(int);
   std::string Name();
   std::string User();                      // TODO: See src/process.cpp

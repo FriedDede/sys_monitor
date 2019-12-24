@@ -36,7 +36,6 @@ vector<string> System::Sysfileread(std::string filename){
     proc_Sys.close();        
     return words;
 }
-
 std::string System::OperatingSystem() { 
     std::string file="sys/kernel/version";
     std::vector<std::string> words = System::Sysfileread(file);
@@ -47,7 +46,6 @@ std::string System::Hostname() {
     std::vector<std::string> words = System::Sysfileread(file);
     return words[0]; 
 }
-
 std::string System::Kernel() {
     std::string file= "version";
     std::vector<std::string> words = System::Sysfileread(file);
@@ -108,7 +106,6 @@ float System::MemoryUtilization() {
     ramusage = ((totalram-freeram)/totalram);
     return ramusage;
 }
-
 
 float System::Cpumean1m() { 
     struct sysinfo info;

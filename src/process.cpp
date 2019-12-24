@@ -73,6 +73,22 @@ int Process::Pid() {
     return process_ID;     
 }
 
+std::string Process::Parent_Pid(){
+        if (Process::exist())
+    {
+        std::vector<std::string> words = Process::procfileread("status");
+        for (int i = 0; i < words.size(); i++)
+        {
+            if (words[i]== "PPid:"){string PPid = words[++i];
+            return PPid;}
+        }
+    }
+    else
+    {
+        return "Not Found";
+    } 
+}    
+
 int Process::Pid_Insec(int buff_pid){
     Process::process_ID=buff_pid;
     return 0;
