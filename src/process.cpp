@@ -43,7 +43,11 @@ string Process::Name() {
     {
         std::vector<std::string> words = Process::procfileread("status");
         string procname;
-        for (int i = 0; i < words.size(); i++){if (words[i]== "Name:"){procname=words[++i];}}
+        for (int i = 0; i < words.size(); i++){
+            if (words[i]== "Name:"){
+                procname=words[++i];
+            }
+        }
         return procname;
     }
     else{return "Not Found";} 
