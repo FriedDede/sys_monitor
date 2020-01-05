@@ -11,6 +11,7 @@
 using std::string;
 using std::to_string;
 
+#define ESC_KEY 27
 // 50 bars uniformly displayed from 0 - 100 %
 // 2% is one bar(|)
 std::string NCursesDisplay::ProgressBar(float percent) {
@@ -75,7 +76,7 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,WINDOW* wi
     int const command_column{67};
     
     wattron(window, COLOR_PAIR(2));
-    mvwprintw(window, ++row, pid_column, "PID");
+    mvwprintw(window, row, pid_column, "PID");
     mvwprintw(window, row, Ppid_column, "PPID");
     mvwprintw(window, row, user_column, "UID");
     mvwprintw(window, row, cpu_column, "CPU[%%]");
@@ -109,28 +110,71 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,WINDOW* wi
   }
 }
 
+void NCursesDisplay::DisplayMenu(WINDOW* window){
+  mvwprintw(window, 1, 2, ("H: Help   ESC:Exit"));
+}
+void NCursesDisplay::DisplayHelp(WINDOW* window){
+  wtimeout(window,-1);
+  werase(window);
+  mvwprintw(window, 1, 2, ("SyS Monitor v0.1"));
+  mvwprintw(window, 2, 2, ("Developer: Andrea Motta"));
+  mvwprintw(window, 3, 2, ("GitHub: https://github.com/Andrea759/system_monitor"));
+  mvwprintw(window, 4, 2, ("Forked from: https://github.com/udacity/CppND-System-Monitor"));
+  mvwprintw(window, 5, 2, ("Version: 2020-01-05"));
+  int key=wgetch(window);
+  fflush(stdin);
+  werase(window);
+}
+
 void NCursesDisplay::Display(System& system,int n) {
   initscr();      // start ncurses
   noecho();       // do not print input values
   cbreak();       // terminate ncurses on ctrl + c
   start_color();  // enable color
-
+  int key_pressed=0;
   int x_max{getmaxx(stdscr)};
-  WINDOW* system_window = newwin(11, x_max - 1, 0, 0);
-  WINDOW* process_window =
-      newwin(10 + system.Processes().size(), x_max - 1, system_window->_maxy + 1, 0);
+  int y_max{getmaxy(stdscr)};
+  int system_window_size=11;
+  int menu_window_size=3;
+  WINDOW* system_window = newwin(system_window_size, x_max - 1, 0, 0);
+  WINDOW* process_window = newwin(y_max-system_window_size-menu_window_size, x_max - 1, system_window->_maxy , 0);
+  WINDOW* menu_window = newwin(menu_window_size, x_max -1, process_window->_maxy + system_window->_maxy +2, 0);
+  keypad(process_window,TRUE);
+  keypad(menu_window,TRUE);
 
   while (1) {
     init_pair(1, COLOR_BLUE, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
+    //Getting terminal x and y 
+    int x_max_temp{getmaxx(stdscr)};
+    int y_max_temp{getmaxy(stdscr)};
+    //Windows sizes and properties
+    system_window = newwin(system_window_size, x_max_temp - 1, 0, 0);
+    process_window = newwin(y_max_temp-system_window_size-menu_window_size, x_max_temp - 1, system_window->_maxy+1 , 0);
+    menu_window = newwin(menu_window_size, x_max_temp -1, process_window->_maxy + system_window->_maxy +2, 0);
+    //Boxes borders
     box(system_window, 0, 0);
-    box(process_window, 0, 0);
+    box(menu_window, 0, 0);
+    //Display functions
     DisplaySystem(system, system_window);
     DisplayProcesses(system.Processes(), process_window, system.Processes().size());
+    DisplayMenu(menu_window);
+    //Active windows resizing
     wrefresh(system_window);
     wrefresh(process_window);
+    wrefresh(menu_window);
+    //Non blocking wgetch
+    wtimeout(stdscr,0);
+    key_pressed=wgetch(stdscr);
+    //wgetch processing
+    if(key_pressed=='h'){DisplayHelp(process_window);key_pressed=0;}
+    if(key_pressed==ESC_KEY){fflush(stdin);std::terminate();}
+
+    
+    else{fflush(stdin);}
     refresh();
     std::this_thread::sleep_for(std::chrono::seconds(1));
+    
   }
   endwin();
 }

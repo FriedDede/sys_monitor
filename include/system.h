@@ -10,17 +10,18 @@
 class System {
  public:
   std::vector<std::string> Sysfileread(std::string);
-  Processor& Cpu();                   // TODO: See src/system.cpp
+  Processor& Cpu();                   
   int TotalProcesses(); 
   std::vector<Process>& Processes();  
   float MemoryUtilization();          
   float Cpumean1m();
   long UpTime();                      
-  int RunningProcesses();             // TODO: See src/system.cpp
-  std::string Kernel();               // TODO: See src/system.cpp
-  std::string OperatingSystem();      // TODO: See src/system.cpp
+  int RunningProcesses();             
+  std::string Kernel();               
+  std::string OperatingSystem();      
   std::string Hostname();
   std::vector<Process> processes_;
+
  private:
   Processor cpu_ ;
   
