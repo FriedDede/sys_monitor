@@ -13,5 +13,6 @@ int main() {
   Ncurse_Display_Thread.join();
   //System system;
   //NCursesDisplay::Display(system, 0);
+  return 0;
   
 }

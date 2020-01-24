@@ -10,11 +10,13 @@
 #include <dirent.h>
 #include <errno.h>
 #include <iostream>
-
+#include <thread>
 
 #include "process.h"
 #include "processor.h"
 #include "system.h"
+
+#define ESC_KEY 27
 
 using std::set;
 using std::size_t;
@@ -133,4 +135,4 @@ long int System::UpTime() {
     struct sysinfo info;
     sysinfo(&info);
     return info.uptime; 
-}
+}   

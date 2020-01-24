@@ -93,9 +93,8 @@ std::string Process::Parent_Pid(){
     } 
 }    
 
-int Process::Pid_Insec(int buff_pid){
+void Process::Pid_Insec(int buff_pid){
     Process::process_ID=buff_pid;
-    return 0;
 }
 
 // TODO: Return this process's CPU utilization
@@ -174,3 +173,4 @@ bool Process::exist(){
     bool filestatus= (bool)proc_pid_status;
     return filestatus;
 }
+

@@ -3,15 +3,41 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 #include "format.h"
 #include "ncurses_display.h"
 #include "system.h"
 
+#define ESC_KEY 27
+
+
 using std::string;
 using std::to_string;
 
-#define ESC_KEY 27
+void NCursesDisplay::Process_Logger(int process_id,std::string path,int cyclenumber){
+    
+    Process process;
+    process.Pid_Insec(process_id);   
+    char fln[path.size() + 1];
+    path.copy(fln, path.size() +1);
+    fln[path.size()]= '\0';
+    std::ofstream Log_file (fln, std::ofstream::out);
+    Log_file << "SyS Monitor Log File";
+    Log_file << "\n PID";
+    int i=0;
+
+    while(i<cyclenumber){
+      Log_file << "\n ";
+      Log_file << std::to_string(process.Pid()).c_str();
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+      i++;
+    }
+    std::cout <<"\n Process "<<process_id<<" logged\n";
+  std::terminate;       
+}
+
 // 50 bars uniformly displayed from 0 - 100 %
 // 2% is one bar(|)
 std::string NCursesDisplay::ProgressBar(float percent) {
@@ -28,10 +54,9 @@ std::string NCursesDisplay::ProgressBar(float percent) {
     display = " " + to_string(percent * 100).substr(0, 3);
   return result + " " + display + "/100%";
 }
-
 void NCursesDisplay::DisplaySystem(System& system, WINDOW* window) {
   int row{0};
-  
+  mvwprintw(window, ++row, 2, "                         SyS Monitor V0.1");
   mvwprintw(window, ++row, 2, ("OS: " + system.OperatingSystem()).c_str());
   mvwprintw(window, ++row, 2, ("Kernel: " + system.Kernel()).c_str());
   mvwprintw(window, ++row, 2, ("Hostname: " + system.Hostname()).c_str());
@@ -62,7 +87,6 @@ void NCursesDisplay::DisplaySystem(System& system, WINDOW* window) {
             ("Up Time: " + Format::ElapsedTime(system.UpTime())).c_str());
   wrefresh(window);
 }
-
 void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,WINDOW* window, int n) {
     
     int row{0};
@@ -76,6 +100,7 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,WINDOW* wi
     int const command_column{67};
     
     wattron(window, COLOR_PAIR(2));
+    werase(window);
     mvwprintw(window, row, pid_column, "PID");
     mvwprintw(window, row, Ppid_column, "PPID");
     mvwprintw(window, row, user_column, "UID");
@@ -91,27 +116,26 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,WINDOW* wi
       if (processes[i].exist())
       {
       mvwprintw(window, ++row, pid_column, to_string(processes[i].Pid()).c_str());
-      mvwprintw(window, row, Ppid_column, "     ");
+      
       mvwprintw(window, row, Ppid_column, processes[i].Parent_Pid().c_str());
-      mvwprintw(window, row, user_column, "    ");
+      
       mvwprintw(window, row, user_column, processes[i].User().c_str());
       float cpu = processes[i].CpuUtilization() * 100;
       mvwprintw(window, row, cpu_column, to_string(cpu).substr(0, 4).c_str());
-      mvwprintw(window, row, ram_column, "        ");
+      
       mvwprintw(window, row, ram_column, processes[i].Ram().c_str());
       mvwprintw(window, row, time_column,
                 Format::ElapsedTime(processes[i].UpTime()).c_str());
-      mvwprintw(window, row, status_column, "           ");
+      
       mvwprintw(window, row, status_column, processes[i].status().c_str());
-      mvwprintw(window, row, command_column,"                             ");
+      
       mvwprintw(window, row, command_column,
                 processes[i].Command().substr(0, window->_maxx - 46).c_str());
       }  
   }
 }
-
 void NCursesDisplay::DisplayMenu(WINDOW* window){
-  mvwprintw(window, 1, 2, ("H: Help   ESC:Exit"));
+  mvwprintw(window, 1, 2, ("L:Logger    H: Help   ESC:Exit"));
 }
 void NCursesDisplay::DisplayHelp(WINDOW* window){
   wtimeout(window,-1);
@@ -121,9 +145,40 @@ void NCursesDisplay::DisplayHelp(WINDOW* window){
   mvwprintw(window, 3, 2, ("GitHub: https://github.com/Andrea759/system_monitor"));
   mvwprintw(window, 4, 2, ("Forked from: https://github.com/udacity/CppND-System-Monitor"));
   mvwprintw(window, 5, 2, ("Version: 2020-01-05"));
-  int key=wgetch(window);
+  mvwprintw(window, 7, 2, ("Press Any key to continue."));
+  wgetch(window);
   fflush(stdin);
   werase(window);
+}
+void NCursesDisplay::DisplayLogger(WINDOW* window){
+  wtimeout(window,-1);
+    werase(window);
+    echo();
+    mvwprintw(window, 1, 2, ("SyS Monitor Logger v0.1"));
+    mvwprintw(window, 2, 2, ("Developer: Andrea Motta"));
+    mvwprintw(window, 3, 2, ("GitHub: https://github.com/Andrea759/system_monitor"));
+    mvwprintw(window, 4, 2, ("Forked from: https://github.com/udacity/CppND-System-Monitor"));
+    mvwprintw(window, 5, 2, ("Version: 2020-01-05"));
+    mvwprintw(window, 7, 2, ("Press Enter"));
+    wgetch(window);
+  endwin();
+
+  int pid;
+  //mvwprintw(window, 8, 2, ("Insert Pid"));
+  std::cout << "\nInsert Pid: ";
+  std::cin >> pid;
+  std::cout << "\nInsert n of Logs:  ";
+  int Lognumber;
+  std::cin >> Lognumber;
+  string filename = "P_"+to_string(pid)+"_Log";
+  std::thread Logger(Process_Logger,pid,filename, Lognumber);
+  Logger.detach();
+  //wgetch(window);
+  getch();
+  fflush(stdin);
+  //werase(window);
+  //noecho();
+
 }
 
 void NCursesDisplay::Display(System& system,int n) {
@@ -134,7 +189,7 @@ void NCursesDisplay::Display(System& system,int n) {
   int key_pressed=0;
   int x_max{getmaxx(stdscr)};
   int y_max{getmaxy(stdscr)};
-  int system_window_size=11;
+  int system_window_size=12;
   int menu_window_size=3;
   WINDOW* system_window = newwin(system_window_size, x_max - 1, 0, 0);
   WINDOW* process_window = newwin(y_max-system_window_size-menu_window_size, x_max - 1, system_window->_maxy , 0);
@@ -156,6 +211,9 @@ void NCursesDisplay::Display(System& system,int n) {
     box(system_window, 0, 0);
     box(menu_window, 0, 0);
     //Display functions
+
+    //std::thread Display_System_Thread(DisplaySystem, system, system_window);
+    
     DisplaySystem(system, system_window);
     DisplayProcesses(system.Processes(), process_window, system.Processes().size());
     DisplayMenu(menu_window);
@@ -167,13 +225,15 @@ void NCursesDisplay::Display(System& system,int n) {
     wtimeout(stdscr,0);
     key_pressed=wgetch(stdscr);
     //wgetch processing
-    if(key_pressed=='h'){DisplayHelp(process_window);key_pressed=0;}
-    if(key_pressed==ESC_KEY){fflush(stdin);std::terminate();}
+
+    if(key_pressed=='h'){DisplayHelp(process_window);fflush(stdin);}
+    if(key_pressed=='l'){DisplayLogger(process_window);fflush(stdin);}
+    if(key_pressed==ESC_KEY){fflush(stdin);endwin();return;}
 
     
     else{fflush(stdin);}
     refresh();
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
     
   }
   endwin();

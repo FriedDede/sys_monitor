@@ -30,8 +30,10 @@ float Processor::Utilization() {
     return utilization;
     
 }
-
 int Processor::Cpu() {
     return 0;
     //return Processor::Cpu_Count;
 }
+
+
+

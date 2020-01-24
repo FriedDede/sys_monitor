@@ -9,7 +9,7 @@ class Process {
   std::vector<std::string> procfileread(std::string);
   int Pid();        
   std::string Parent_Pid();                       
-  int Pid_Insec(int);
+  void Pid_Insec(int);
   std::string Name();
   std::string User();                      // TODO: See src/process.cpp
   std::string Command();                   // TODO: See src/process.cpp
@@ -18,8 +18,8 @@ class Process {
   long int UpTime();
   std::string status();                       // TODO: See src/process.cpp
   bool exist();
-  int process_ID;
-  std::string status_buffer; 
-private:  
+  std::string status_buffer;
+private:
+  int process_ID;  
 };
 #endif
