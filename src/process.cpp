@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <sys/sysinfo.h>
 
 #include "process.h"
 
@@ -99,8 +100,36 @@ int Process::Pid_Insec(int buff_pid){
 }
 
 // TODO: Return this process's CPU utilization
-float Process::CpuUtilization() { 
-    return 0; 
+float Process::CpuUtilization() {
+    float uptime,usage; 
+    float utime,stime,starttime,clock;
+    float utime_delta,stime_delta,uptime_delta;
+    std::vector<std::string> words;
+    std::vector<std::string> cpu;
+    int i;    
+    if (Process::exist())
+    {
+        std::vector<std::string> stat_file = Process::procfileread("stat");
+        
+        uptime=Process::UpTime();
+        utime=atoi(stat_file[13].c_str())/sysconf(_SC_CLK_TCK);
+        stime=atoi(stat_file[14].c_str())/sysconf(_SC_CLK_TCK);
+
+        uptime_delta=uptime-Process::prev_uptime;
+        utime_delta=utime-Process::prev_utime;
+        stime_delta=stime-Process::prev_stime;
+
+        usage = (utime_delta+stime_delta)/uptime_delta;
+        return usage;
+
+        Process::prev_stime=stime;
+        Process::prev_uptime=uptime;
+        Process::prev_utime=utime;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 // Return the command that generates the process   
@@ -160,8 +189,22 @@ string Process::User() {
 }
 
 // TODO: Return the age of this process (in seconds)
-long int Process::UpTime() { 
-    return 0; 
+// Return AVG process cpu usage since Start
+long int Process::UpTime() {
+
+    float uptime,starttime,p_uptime,clock;
+    clock=0;
+    int i;
+    std::vector<std::string> stat_file = Process::procfileread("stat");
+    starttime=atoi(stat_file[21].c_str());
+    struct sysinfo info;
+    sysinfo(&info);
+
+    clock=sysconf(_SC_CLK_TCK);
+    uptime=info.uptime;
+    p_uptime= uptime-(starttime/clock);
+
+    return (long)p_uptime;
 }
 
 bool Process::exist(){

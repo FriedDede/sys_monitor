@@ -90,22 +90,46 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,WINDOW* wi
     
       if (processes[i].exist())
       {
-      mvwprintw(window, ++row, pid_column, to_string(processes[i].Pid()).c_str());
-      mvwprintw(window, row, Ppid_column, "     ");
-      mvwprintw(window, row, Ppid_column, processes[i].Parent_Pid().c_str());
-      mvwprintw(window, row, user_column, "    ");
-      mvwprintw(window, row, user_column, processes[i].User().c_str());
-      float cpu = processes[i].CpuUtilization() * 100;
-      mvwprintw(window, row, cpu_column, to_string(cpu).substr(0, 4).c_str());
-      mvwprintw(window, row, ram_column, "        ");
-      mvwprintw(window, row, ram_column, processes[i].Ram().c_str());
-      mvwprintw(window, row, time_column,
-                Format::ElapsedTime(processes[i].UpTime()).c_str());
-      mvwprintw(window, row, status_column, "           ");
-      mvwprintw(window, row, status_column, processes[i].status().c_str());
-      mvwprintw(window, row, command_column,"                             ");
-      mvwprintw(window, row, command_column,
-                processes[i].Command().substr(0, window->_maxx - 46).c_str());
+        if (processes[i].CpuUtilization()>0.01)
+        {
+        wattron(window, COLOR_PAIR(2));
+        mvwprintw(window, ++row, pid_column, to_string(processes[i].Pid()).c_str());
+        mvwprintw(window, row, Ppid_column, "     ");
+        mvwprintw(window, row, Ppid_column, processes[i].Parent_Pid().c_str());
+        mvwprintw(window, row, user_column, "    ");
+        mvwprintw(window, row, user_column, processes[i].User().c_str());
+        float cpu = processes[i].CpuUtilization() * 100;
+        mvwprintw(window, row, cpu_column, to_string(cpu).substr(0, 4).c_str());
+        mvwprintw(window, row, ram_column, "        ");
+        mvwprintw(window, row, ram_column, processes[i].Ram().c_str());
+        mvwprintw(window, row, time_column,
+                  Format::ElapsedTime(processes[i].UpTime()).c_str());
+        mvwprintw(window, row, status_column, "           ");
+        mvwprintw(window, row, status_column, processes[i].status().c_str());
+        mvwprintw(window, row, command_column,"                             ");
+        mvwprintw(window, row, command_column,
+                  processes[i].Command().substr(0, window->_maxx - 46).c_str());
+        wattroff(window, COLOR_PAIR(2));
+        }
+        else       
+        {
+        mvwprintw(window, ++row, pid_column, to_string(processes[i].Pid()).c_str());
+        mvwprintw(window, row, Ppid_column, "     ");
+        mvwprintw(window, row, Ppid_column, processes[i].Parent_Pid().c_str());
+        mvwprintw(window, row, user_column, "    ");
+        mvwprintw(window, row, user_column, processes[i].User().c_str());
+        float cpu = processes[i].CpuUtilization() * 100;
+        mvwprintw(window, row, cpu_column, to_string(cpu).substr(0, 4).c_str());
+        mvwprintw(window, row, ram_column, "        ");
+        mvwprintw(window, row, ram_column, processes[i].Ram().c_str());
+        mvwprintw(window, row, time_column,
+                  Format::ElapsedTime(processes[i].UpTime()).c_str());
+        mvwprintw(window, row, status_column, "           ");
+        mvwprintw(window, row, status_column, processes[i].status().c_str());
+        mvwprintw(window, row, command_column,"                             ");
+        mvwprintw(window, row, command_column,
+                  processes[i].Command().substr(0, window->_maxx - 46).c_str());
+        }
       }  
   }
 }
