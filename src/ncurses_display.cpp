@@ -37,7 +37,6 @@ void NCursesDisplay::Process_Logger(int process_id,std::string path,int cyclenum
     std::cout <<"\n Process "<<process_id<<" logged\n";
   std::terminate;       
 }
-
 // 50 bars uniformly displayed from 0 - 100 %
 // 2% is one bar(|)
 std::string NCursesDisplay::ProgressBar(float percent) {
@@ -164,7 +163,6 @@ void NCursesDisplay::DisplayLogger(WINDOW* window){
   endwin();
 
   int pid;
-  //mvwprintw(window, 8, 2, ("Insert Pid"));
   std::cout << "\nInsert Pid: ";
   std::cin >> pid;
   std::cout << "\nInsert n of Logs:  ";
@@ -173,12 +171,8 @@ void NCursesDisplay::DisplayLogger(WINDOW* window){
   string filename = "P_"+to_string(pid)+"_Log";
   std::thread Logger(Process_Logger,pid,filename, Lognumber);
   Logger.detach();
-  //wgetch(window);
   getch();
   fflush(stdin);
-  //werase(window);
-  //noecho();
-
 }
 
 void NCursesDisplay::Display(System& system,int n) {

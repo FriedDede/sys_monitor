@@ -5,8 +5,10 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <sys/sysinfo.h>
 
 #include "process.h"
+#include "system.h"
 
 using std::string;
 using std::to_string;
@@ -18,10 +20,7 @@ vector<string> Process::procfileread(std::string filename){
     {
         std::string str_pid = std::to_string(Process::process_ID);
         std::string path= "/proc/" + str_pid + "/" + filename;   
-        char fln[path.size() + 1];
-        path.copy(fln, path.size() +1);
-        fln[path.size()]= '\0';
-        std::ifstream proc_pid_status (fln, std::ifstream::in);
+        std::ifstream proc_pid_status (path.c_str(), std::ifstream::in);
         std::string str;
 
         while (proc_pid_status >> str){                  
@@ -32,8 +31,8 @@ vector<string> Process::procfileread(std::string filename){
     }
     else
     {
-        std::string NotFounfFlag = "Not Found";
-        words.push_back(NotFounfFlag);
+        std::string NotFoundFlag = "Not Found";
+        words.push_back(NotFoundFlag);
         return words;
     }
 }
@@ -160,16 +159,18 @@ string Process::User() {
 
 // TODO: Return the age of this process (in seconds)
 long int Process::UpTime() { 
-    return 0; 
+    long int time;
+    vector<string>stat=procfileread("stat");
+    struct sysinfo info;
+    sysinfo(&info);
+    time=info.uptime-(atoi(stat[21].c_str())/sysconf(_SC_CLK_TCK));
+    return time; 
 }
 
 bool Process::exist(){
     std::string str_pid = std::to_string(Process::process_ID);
-    std::string path= "/proc/" + str_pid + "/status";   
-    char fln[path.size() + 1];
-    path.copy(fln, path.size() +1);
-    fln[path.size()]= '\0';
-    std::ifstream proc_pid_status (fln, std::ifstream::in);
+    std::string path= "/proc/" + str_pid + "/status";   ;
+    std::ifstream proc_pid_status (path.c_str(), std::ifstream::in);
     bool filestatus= (bool)proc_pid_status;
     return filestatus;
 }

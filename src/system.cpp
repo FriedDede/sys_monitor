@@ -27,10 +27,7 @@ using std::vector;
 vector<string> System::Sysfileread(std::string filename){
     std::vector<std::string> words;
         std::string path= "/proc/" + filename;   
-        char fln[path.size() + 1];
-        path.copy(fln, path.size() +1);
-        fln[path.size()]= '\0';
-        std::ifstream proc_Sys (fln, std::ifstream::in);
+        std::ifstream proc_Sys (path.c_str(), std::ifstream::in);
         std::string str;
     while (proc_Sys >> str){                  
         words.push_back(str);
@@ -38,16 +35,19 @@ vector<string> System::Sysfileread(std::string filename){
     proc_Sys.close();        
     return words;
 }
+
 std::string System::OperatingSystem() { 
     std::string file="sys/kernel/version";
     std::vector<std::string> words = System::Sysfileread(file);
     return words[0]; 
 }
+
 std::string System::Hostname() { 
     std::string file="sys/kernel/hostname";
     std::vector<std::string> words = System::Sysfileread(file);
     return words[0]; 
 }
+
 std::string System::Kernel() {
     std::string file= "version";
     std::vector<std::string> words = System::Sysfileread(file);
@@ -81,9 +81,6 @@ vector<Process>& System::Processes() {
     for (int i = 2; i < files.size(); i++)
     {
         std::string path = files[i];
-        char fln[path.size() + 1];
-        path.copy(fln, path.size() +1);
-        fln[path.size()]= '\0';
         
         if (atoi(path.c_str())>0)
         {   
@@ -135,4 +132,4 @@ long int System::UpTime() {
     struct sysinfo info;
     sysinfo(&info);
     return info.uptime; 
-}   
+}

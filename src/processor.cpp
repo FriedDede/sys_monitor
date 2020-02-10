@@ -12,6 +12,7 @@ std::vector<size_t> get_cpu_times() {
     for (size_t time; proc_stat >> time; times.push_back(time));
     return times;
 }
+
 bool get_cpu_times(size_t &idle_time, size_t &total_time) {
     const std::vector<size_t> cpu_times = get_cpu_times();
     if (cpu_times.size() < 4)
@@ -20,6 +21,7 @@ bool get_cpu_times(size_t &idle_time, size_t &total_time) {
     total_time = std::accumulate(cpu_times.begin(), cpu_times.end(), 0);
     return true;
 }
+
 float Processor::Utilization() {  
     size_t idle_time, total_time; get_cpu_times(idle_time, total_time);
     const float idle_time_delta = idle_time - Processor::CPU_Previous_Idle;
@@ -30,6 +32,7 @@ float Processor::Utilization() {
     return utilization;
     
 }
+
 int Processor::Cpu() {
     return 0;
     //return Processor::Cpu_Count;
