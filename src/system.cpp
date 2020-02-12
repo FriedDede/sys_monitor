@@ -67,32 +67,37 @@ int System::TotalProcesses() {
 
 // Return a vector structure containing processes list
 vector<Process>& System::Processes() {
-    int process_position=0;  
+
+    int process_position=0;
     int process_number_at_runtime = System::TotalProcesses();
+    struct dirent *dirp;
+
     processes_.resize(process_number_at_runtime);
     string dir = string("/proc");
     vector<string> files;
     DIR *dp;
-    struct dirent *dirp;
     dp  = opendir(dir.c_str());
-    while ((dirp = readdir(dp)) != NULL) {
+
+    while ((dirp = readdir(dp)) != NULL){
         files.push_back(string(dirp->d_name));
     }
-    for (int i = 2; i < files.size(); i++)
-    {
+
+    for (int i = 2; i < files.size(); i++){
         std::string path = files[i];
         
         if (atoi(path.c_str())>0)
-        {   
-            int pid= atoi(path.c_str());
+        {
+            int pid = atoi(path.c_str());
             Process temp_process;
             temp_process.Pid_Insec(pid);
-            processes_[process_position]=temp_process;   
+            if(processes_[process_position].Pid() != pid) processes_[process_position]=temp_process;
             process_position++;
-        }        
+        } 
     }
+
     processes_.resize(process_position);
     closedir(dp);
+
     return processes_;
 }
 

@@ -20,6 +20,9 @@ class Process {
   bool exist();
   std::string status_buffer;
 private:
-  int process_ID;  
+  int process_ID;
+  float prev_u_time=0;
+  float prev_s_time=0;
+  float prev_uptime=0;
 };
 #endif

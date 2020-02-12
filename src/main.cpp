@@ -9,10 +9,10 @@ void Ncurse_Display_Handler(){
 }
 
 int main() {
+
   std::thread Ncurse_Display_Thread(Ncurse_Display_Handler);
-  Ncurse_Display_Thread.join();
-  //System system;
-  //NCursesDisplay::Display(system, 0);
-  return 0;
   
+  Ncurse_Display_Thread.join();
+
+  return 0;
 }

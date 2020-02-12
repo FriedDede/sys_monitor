@@ -98,7 +98,24 @@ void Process::Pid_Insec(int buff_pid){
 
 // TODO: Return this process's CPU utilization
 float Process::CpuUtilization() { 
-    return 0; 
+    float s_time, delta_s_time;
+    float u_time, delta_u_time;
+    float uptime, delta_uptime;
+
+    vector<string> stat = procfileread("stat");
+    u_time=(float)(atoi(stat[13].c_str()))/sysconf(_SC_CLK_TCK);
+    s_time=(float)(atoi(stat[14].c_str()))/sysconf(_SC_CLK_TCK);
+    uptime=(float)Process::UpTime();
+
+    delta_s_time=s_time-prev_s_time;
+    delta_u_time=u_time-prev_u_time;
+    delta_uptime=uptime-prev_uptime;
+
+    prev_uptime=uptime;
+    prev_u_time=u_time;
+    prev_s_time=s_time;
+
+    return (delta_s_time+delta_u_time)/uptime;
 }
 
 // Return the command that generates the process   

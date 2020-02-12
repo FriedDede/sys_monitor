@@ -1,5 +1,5 @@
 CXX = g++
-CPPFLAGS = -g
+CPPFLAGS = -stripped
 .PHONY: all
 all: format test build
 

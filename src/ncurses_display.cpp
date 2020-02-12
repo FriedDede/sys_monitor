@@ -17,17 +17,14 @@ using std::string;
 using std::to_string;
 
 void NCursesDisplay::Process_Logger(int process_id,std::string path,int cyclenumber){
-    
-    Process process;
-    process.Pid_Insec(process_id);   
-    char fln[path.size() + 1];
-    path.copy(fln, path.size() +1);
-    fln[path.size()]= '\0';
-    std::ofstream Log_file (fln, std::ofstream::out);
-    Log_file << "SyS Monitor Log File";
-    Log_file << "\n PID";
     int i=0;
 
+    Process process;
+    process.Pid_Insec(process_id);
+    std::ofstream Log_file (path.c_str(), std::ofstream::out);
+    Log_file << "SyS Monitor Log File";
+    Log_file << "\n PID";
+    
     while(i<cyclenumber){
       Log_file << "\n ";
       Log_file << std::to_string(process.Pid()).c_str();
@@ -150,6 +147,10 @@ void NCursesDisplay::DisplayHelp(WINDOW* window){
   werase(window);
 }
 void NCursesDisplay::DisplayLogger(WINDOW* window){
+  int Lognumber;
+  int pid;
+  string filename;
+
   wtimeout(window,-1);
     werase(window);
     echo();
@@ -161,14 +162,12 @@ void NCursesDisplay::DisplayLogger(WINDOW* window){
     mvwprintw(window, 7, 2, ("Press Enter"));
     wgetch(window);
   endwin();
-
-  int pid;
+  
   std::cout << "\nInsert Pid: ";
   std::cin >> pid;
   std::cout << "\nInsert n of Logs:  ";
-  int Lognumber;
   std::cin >> Lognumber;
-  string filename = "P_"+to_string(pid)+"_Log";
+  filename = "P_"+to_string(pid)+"_Log";
   std::thread Logger(Process_Logger,pid,filename, Lognumber);
   Logger.detach();
   getch();
@@ -227,7 +226,7 @@ void NCursesDisplay::Display(System& system,int n) {
     
     else{fflush(stdin);}
     refresh();
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     
   }
   endwin();
