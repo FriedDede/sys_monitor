@@ -1,4 +1,4 @@
-#ifndef SYSTEM_H
+#pragma once
 #define SYSTEM_H
 
 #include <string>
@@ -26,5 +26,3 @@ class System {
   Processor cpu_ ;
   
 };
-
-#endif

@@ -5,7 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <sys/sysinfo.h>
-#include <sys/stat.h>
+#include <linux/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <errno.h>
@@ -21,10 +21,9 @@
 using std::set;
 using std::size_t;
 using std::string;
-using std::vector;
 
 
-vector<string> System::Sysfileread(std::string filename){
+std::vector<string> System::Sysfileread(std::string filename){
     std::vector<std::string> words;
         std::string path= "/proc/" + filename;   
         std::ifstream proc_Sys (path.c_str(), std::ifstream::in);
@@ -54,7 +53,6 @@ std::string System::Kernel() {
     return words[2]; 
 }
 
-// TODO: Return the system's CPU
 Processor& System::Cpu() {
     return cpu_; 
 }
@@ -65,16 +63,15 @@ int System::TotalProcesses() {
     return info.procs; 
 }
 
-// Return a vector structure containing processes list
-vector<Process>& System::Processes() {
+std::vector<Process>& System::Processes() {
 
     int process_position=0;
     int process_number_at_runtime = System::TotalProcesses();
     struct dirent *dirp;
 
     processes_.resize(process_number_at_runtime);
-    string dir = string("/proc");
-    vector<string> files;
+    std::string dir = string("/proc");
+    std::vector<string> files;
     DIR *dp;
     dp  = opendir(dir.c_str());
 

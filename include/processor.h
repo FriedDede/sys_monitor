@@ -1,4 +1,4 @@
-#ifndef PROCESSOR_H
+#pragma once
 #define PROCESSOR_H
 
 class Processor {
@@ -13,5 +13,3 @@ class Processor {
     int Cpu_Count;
     float CPU_Previous_Idle=0,CPU_Previous_Total=0;
 };
-
-#endif

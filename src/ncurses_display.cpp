@@ -189,10 +189,9 @@ void NCursesDisplay::Display(System& system,int n) {
   WINDOW* menu_window = newwin(menu_window_size, x_max -1, process_window->_maxy + system_window->_maxy +2, 0);
   keypad(process_window,TRUE);
   keypad(menu_window,TRUE);
-
+  init_pair(1, COLOR_BLUE, COLOR_BLACK);
+  init_pair(2, COLOR_GREEN, COLOR_BLACK);
   while (1) {
-    init_pair(1, COLOR_BLUE, COLOR_BLACK);
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);
     //Getting terminal x and y 
     int x_max_temp{getmaxx(stdscr)};
     int y_max_temp{getmaxy(stdscr)};

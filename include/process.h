@@ -1,4 +1,4 @@
-#ifndef PROCESS_H
+#pragma once
 #define PROCESS_H
 
 #include <string>
@@ -25,4 +25,3 @@ private:
   float prev_s_time=0;
   float prev_uptime=0;
 };
-#endif
