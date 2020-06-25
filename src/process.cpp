@@ -107,13 +107,13 @@ float Process::CpuUtilization() {
     s_time=(float)(atoi(stat[14].c_str()))/sysconf(_SC_CLK_TCK);
     uptime=(float)Process::UpTime();
 
-    delta_s_time=s_time-this->prev_s_time;
-    delta_u_time=u_time-this->prev_u_time;
-    delta_uptime=uptime-this->prev_uptime;
+    delta_s_time=s_time-Process::prev_s_time;
+    delta_u_time=u_time-Process::prev_u_time;
+    delta_uptime=uptime-Process::prev_uptime;
 
-    this->prev_uptime=uptime;
-    this->prev_u_time=u_time;
-    this->prev_s_time=s_time;
+    Process::prev_uptime=uptime;
+    Process::prev_u_time=u_time;
+    Process::prev_s_time=s_time;
 
     return (delta_s_time+delta_u_time)/uptime;
 }

@@ -23,11 +23,18 @@ void NCursesDisplay::Process_Logger(int process_id,std::string path,int cyclenum
     process.Pid_Insec(process_id);
     std::ofstream Log_file (path.c_str(), std::ofstream::out);
     Log_file << "SyS Monitor Log File";
-    Log_file << "\n PID";
+    Log_file << "\n PID \t CPU \t MEM \t TIME";
     
     while(i<cyclenumber){
       Log_file << "\n ";
       Log_file << std::to_string(process.Pid()).c_str();
+      Log_file << "\t";
+      Log_file << std::to_string(process.CpuUtilization()).c_str();
+      Log_file << "\t";
+      Log_file << process.Ram().c_str();
+      Log_file << "\t";
+      Log_file << std::to_string(process.UpTime()).c_str();
+      Log_file << "\t";      
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
       i++;
     }
