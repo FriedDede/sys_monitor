@@ -14,7 +14,6 @@ class System {
   int TotalProcesses(); 
   std::vector<Process>& Processes();  
   float MemoryUtilization();          
-  float Cpumean1m();
   long UpTime();                      
   int RunningProcesses();             
   std::string Kernel();               

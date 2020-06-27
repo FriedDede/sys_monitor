@@ -108,14 +108,6 @@ float System::MemoryUtilization() {
     return ramusage;
 }
 
-float System::Cpumean1m() { 
-    struct sysinfo info;
-    sysinfo(&info);
-    //output format must be 0.usage;
-    //info.load range is 0 to 1000;
-    float avgload=info.loads[0]/100000.0;
-    return avgload;
-}
 
 int System::RunningProcesses() {    
     int running_counter=0;

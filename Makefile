@@ -18,6 +18,7 @@ EXE = Sys_Monitor_opengl3
 SOURCES = main.cpp
 SOURCES += imgui/opengl3/imgui_impl_sdl.cpp imgui/opengl3/imgui_impl_opengl3.cpp
 SOURCES += imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_widgets.cpp
+SOURCES += src/format.cpp src/process.cpp src/system.cpp src/processor.cpp
 OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 UNAME_S := $(shell uname -s)
 
@@ -82,6 +83,8 @@ endif
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
+%.o:src/%.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 %.o:%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 

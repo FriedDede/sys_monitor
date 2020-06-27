@@ -4,6 +4,7 @@
 #include <numeric>
 #include <unistd.h>
 #include <vector>
+#include <sys/sysinfo.h>
 
 std::vector<size_t> get_cpu_times() {
     std::ifstream proc_stat("/proc/stat");
@@ -36,4 +37,21 @@ float Processor::Utilization() {
 int Processor::Cpu() {
     return 0;
     //return Processor::Cpu_Count;
+}
+
+float Processor::Cpumean1m() { 
+    struct sysinfo info;
+    sysinfo(&info);
+    //output format must be 0.usage;
+    //info.load range is 0 to 1000;
+    float avgload=info.loads[0]/100000.0;
+    return avgload;
+}
+float Processor::Cpumean5m() { 
+    struct sysinfo info;
+    sysinfo(&info);
+    //output format must be 0.usage;
+    //info.load range is 0 to 1000;
+    float avgload=info.loads[1]/100000.0;
+    return avgload;
 }

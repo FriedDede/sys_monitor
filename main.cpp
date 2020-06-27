@@ -6,6 +6,12 @@
 #include "imgui/imgui.h"
 #include "imgui/opengl3/imgui_impl_sdl.h"
 #include "imgui/opengl3/imgui_impl_opengl3.h"
+
+#include "include/format.h"
+#include "include/process.h"
+#include "include/processor.h"
+#include "include/system.h"
+
 #include <stdio.h>
 #include <SDL.h>
 
@@ -14,23 +20,23 @@
 //  Helper libraries are often used for this purpose! Here we are supporting a few common ones (gl3w, glew, glad).
 //  You may use another loader/header of your choice (glext, glLoadGen, etc.), or chose to manually implement your own.
 #if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-#include <GL/gl3w.h>            // Initialize with gl3wInit()
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-#include <GL/glew.h>            // Initialize with glewInit()
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-#include <glad/glad.h>          // Initialize with gladLoadGL()
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING2)
-#define GLFW_INCLUDE_NONE       // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
-#include <glbinding/Binding.h>  // Initialize with glbinding::Binding::initialize()
-#include <glbinding/gl/gl.h>
-using namespace gl;
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING3)
-#define GLFW_INCLUDE_NONE       // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
-#include <glbinding/glbinding.h>// Initialize with glbinding::initialize()
-#include <glbinding/gl/gl.h>
-using namespace gl;
-#else
-#include IMGUI_IMPL_OPENGL_LOADER_CUSTOM
+    #include <GL/gl3w.h>            // Initialize with gl3wInit()
+    #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
+    #include <GL/glew.h>            // Initialize with glewInit()
+    #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
+    #include <glad/glad.h>          // Initialize with gladLoadGL()
+    #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING2)
+    #define GLFW_INCLUDE_NONE       // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
+    #include <glbinding/Binding.h>  // Initialize with glbinding::Binding::initialize()
+    #include <glbinding/gl/gl.h>
+    using namespace gl;
+    #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING3)
+    #define GLFW_INCLUDE_NONE       // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
+    #include <glbinding/glbinding.h>// Initialize with glbinding::initialize()
+    #include <glbinding/gl/gl.h>
+    using namespace gl;
+    #else
+    #include IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #endif
 
 // Main code
@@ -61,8 +67,7 @@ int main(int, char**)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #endif
-
-    // Create window with graphics context
+// Create window with graphics context
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
@@ -71,8 +76,7 @@ int main(int, char**)
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     SDL_GL_MakeCurrent(window, gl_context);
     SDL_GL_SetSwapInterval(1); // Enable vsync
-
-    // Initialize OpenGL loader
+// Initialize OpenGL loader
 #if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
     bool err = gl3wInit() != 0;
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
@@ -109,21 +113,6 @@ int main(int, char**)
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    // Load Fonts
-    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-    // - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-    // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-    // - Read 'docs/FONTS.txt' for more instructions and details.
-    // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-    //io.Fonts->AddFontDefault();
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-    //IM_ASSERT(font != NULL);
-
     // Our state
     bool show_sys_window = false;
     bool show_cpu_window = false;
@@ -134,6 +123,7 @@ int main(int, char**)
 
     // Main loop
     bool done = false;
+    System *system = new System;
     while (!done)
     {
         static float f = 0.0f;
@@ -186,12 +176,26 @@ int main(int, char**)
             ImGui::Begin("System info", &show_sys_window);   
             //if (ImGui::Button("Close Me"))
             //    show_sys_window = false;
+            ImGui::Text("OS:    %s",system->OperatingSystem().c_str());
+            ImGui::Text("Kernel:    %s",system->Kernel().c_str());
+            ImGui::Text("Hostname:    %s",system->Hostname().c_str());
+            ImGui::Text("Total Processes:    %d",system->TotalProcesses());
+            ImGui::Text("Up Time:    %s",Format::ElapsedTime(system->UpTime()).c_str());
+            ImGui::ProgressBar(system->MemoryUtilization(), ImVec2(0,0), "MEM");
             ImGui::End();
         }
         if (show_cpu_window){
             ImGui::Begin("CPU stat", &show_cpu_window);   
-            ImGui::Text("Hello from another window!");
-    
+            ImGui::Text("CPU");
+            float Cpu1m= system->Cpu().Cpumean1m();
+            float Cpu5m= system->Cpu().Cpumean5m();
+            float Cpu= system->Cpu().Utilization();
+            ImGui::Text("CPU Usage: %f /100", Cpu*100);
+            ImGui::ProgressBar(Cpu, ImVec2(-1,0), "");
+            ImGui::Text("CPU Average 1 minute: %f /100", Cpu1m*100);
+            ImGui::ProgressBar(Cpu1m, ImVec2(-1,0), "");
+            ImGui::Text("CPU Average 5 minute: %f /100", Cpu5m*100);
+            ImGui::ProgressBar(Cpu5m, ImVec2(-1,0), "");
             
             ImGui::End();
         }
