@@ -14,14 +14,14 @@
 #CXX = g++
 #CXX = clang++
 
-EXE = Sys_Monitor_opengl3
+EXE = example_sdl_opengl3
 SOURCES = main.cpp
-SOURCES += imgui/opengl3/imgui_impl_sdl.cpp imgui/opengl3/imgui_impl_opengl3.cpp
-SOURCES += imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_widgets.cpp
+SOURCES += ../imgui_impl_sdl.cpp ../imgui_impl_opengl3.cpp
+SOURCES += ../../imgui.cpp ../../imgui_demo.cpp ../../imgui_draw.cpp ../../imgui_widgets.cpp
 OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 UNAME_S := $(shell uname -s)
 
-CXXFLAGS = -Iimgui/ -Iimgui/opengl3/ -Isrc/ -Iinclude/
+CXXFLAGS = -I../ -I../../
 CXXFLAGS += -g -Wall -Wformat
 LIBS =
 
@@ -30,8 +30,8 @@ LIBS =
 ##---------------------------------------------------------------------
 
 ## Using OpenGL loader: gl3w [default]
-SOURCES += imgui/libs/gl3w/GL/gl3w.c
-CXXFLAGS += -Iimgui/libs/gl3w -DIMGUI_IMPL_OPENGL_LOADER_GL3W
+SOURCES += ../libs/gl3w/GL/gl3w.c
+CXXFLAGS += -I../libs/gl3w -DIMGUI_IMPL_OPENGL_LOADER_GL3W
 
 ## Using OpenGL loader: glew
 ## (This assumes a system-wide installation)
@@ -85,16 +85,16 @@ endif
 %.o:%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o:imgui/%.cpp
+%.o:../%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o:imgui/opengl3/%.cpp
+%.o:../../%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o:imgui/libs/gl3w/GL/%.c
+%.o:../libs/gl3w/GL/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-%.o:imgui/libs/glad/src/%.c
+%.o:../libs/glad/src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 all: $(EXE)
