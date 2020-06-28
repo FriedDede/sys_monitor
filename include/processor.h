@@ -6,7 +6,7 @@ class Processor {
  public:
 
   float Utilization();  // TODO: See src/processor.cpp
-  int Cpu();
+  int CoreCount();
   float Cpumean1m();
   float Cpumean5m();
   // TODO: Declare any necessary private members

@@ -101,12 +101,24 @@ std::vector<Process>& System::Processes() {
 float System::MemoryUtilization() { 
     struct sysinfo info;
     sysinfo(&info);
-    float ramusage;
-    float freeram=info.freeram;
-    float totalram=info.totalram;
-    ramusage = ((totalram-freeram)/totalram);
-    return ramusage;
+    return ((float)info.totalram-(float)info.freeram)/(float)info.totalram;
 }
+float System::MemoryBuffer() { 
+    struct sysinfo info;
+    sysinfo(&info);
+    return (float)info.bufferram/(float)info.totalram;
+}
+float System::MemoryShared() { 
+    struct sysinfo info;
+    sysinfo(&info);
+    return (float)info.sharedram/(float)info.totalram;
+}
+float System::MemorySwap() { 
+    struct sysinfo info;
+    sysinfo(&info);
+    return ((float)info.freeswap-(float)info.totalswap)/(float)info.totalswap;
+}
+
 
 
 int System::RunningProcesses() {    

@@ -13,6 +13,9 @@
 #include "include/system.h"
 
 #include <stdio.h>
+#include <string.h>
+#include <vector>
+#include <thread>
 #include <SDL.h>
 
 // About Desktop OpenGL function loaders:
@@ -119,11 +122,17 @@ int main(int, char**)
     bool show_mem_window = false;
     bool show_log_window = false;
     bool show_proc_window = false;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 
     // Main loop
     bool done = false;
     System *system = new System;
+    std::string OS = system->OperatingSystem();
+    std::string Kernel = system->Kernel();
+    int Cores = system->Cpu().CoreCount();
+    std::string Hostname = system->Hostname();
+    int UpTime= system->UpTime();
+
     while (!done)
     {
         static float f = 0.0f;
@@ -142,17 +151,18 @@ int main(int, char**)
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
                 done = true;
         }
-
+    {
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame(window);
         ImGui::NewFrame();
 
 
-        ImGui::Begin("Hello, world!");                          
-
-        ImGui::Text("This is some useful text.");               
-            // window open/close state
+        ImGui::Begin("Main Menù");
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();                          
+        ImGui::Text("Windows:");                           // window open/close state
         ImGui::Checkbox("System Info", &show_sys_window);
         ImGui::Checkbox("CPU stat", &show_cpu_window);
         ImGui::Checkbox("Memory stat", &show_mem_window);
@@ -160,56 +170,108 @@ int main(int, char**)
         ImGui::Checkbox("Process Logger", &show_log_window);
             
 
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-        ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+        //ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+        //ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
             //if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
             //    counter++;
             //ImGui::SameLine();
             //ImGui::Text("counter = %d", counter);
-
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         ImGui::End();
-        
+    }    
         
         if (show_sys_window){
             ImGui::Begin("System info", &show_sys_window);   
             //if (ImGui::Button("Close Me"))
             //    show_sys_window = false;
-            ImGui::Text("OS:    %s",system->OperatingSystem().c_str());
-            ImGui::Text("Kernel:    %s",system->Kernel().c_str());
-            ImGui::Text("Hostname:    %s",system->Hostname().c_str());
+            ImGui::Text("OS:    %s",OS.c_str());
+            ImGui::Text("Kernel:    %s",Kernel.c_str());
+            ImGui::Text("Hostname:    %s",Hostname.c_str());
             ImGui::Text("Total Processes:    %d",system->TotalProcesses());
             ImGui::Text("Up Time:    %s",Format::ElapsedTime(system->UpTime()).c_str());
-            ImGui::ProgressBar(system->MemoryUtilization(), ImVec2(0,0), "MEM");
+            ImGui::Text("Cores:    %d",Cores);
             ImGui::End();
         }
         if (show_cpu_window){
             ImGui::Begin("CPU stat", &show_cpu_window);   
-            ImGui::Text("CPU");
             float Cpu1m= system->Cpu().Cpumean1m();
             float Cpu5m= system->Cpu().Cpumean5m();
             float Cpu= system->Cpu().Utilization();
             ImGui::Text("CPU Usage: %f /100", Cpu*100);
             ImGui::ProgressBar(Cpu, ImVec2(-1,0), "");
-            ImGui::Text("CPU Average 1 minute: %f /100", Cpu1m*100);
-            ImGui::ProgressBar(Cpu1m, ImVec2(-1,0), "");
-            ImGui::Text("CPU Average 5 minute: %f /100", Cpu5m*100);
-            ImGui::ProgressBar(Cpu5m, ImVec2(-1,0), "");
+            ImGui::Text("CPU Average 1 minute: %f /100", (Cpu1m/(float)Cores)*100);
+            ImGui::ProgressBar(Cpu1m/(float)Cores, ImVec2(-1,0), "");
+            ImGui::Text("CPU Average 5 minute: %f /100", (Cpu5m/(float)Cores)*100);
+            ImGui::ProgressBar(Cpu5m/(float)Cores, ImVec2(-1,0), "");
             
             ImGui::End();
         }
         if (show_mem_window){
             ImGui::Begin("Memory stat", &show_mem_window);   
-            ImGui::Text("Hello from another window!");
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Usage: %f /100", system->MemoryUtilization()*100);
+            ImGui::ProgressBar(system->MemoryUtilization(), ImVec2(-1,0), "");
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Shared: %f /100", system->MemoryShared()*100);
+            ImGui::ProgressBar(system->MemoryShared(), ImVec2(-1,0), "");
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Buffer: %f /100", system->MemoryBuffer()*100);
+            ImGui::ProgressBar(system->MemoryBuffer(), ImVec2(-1,0), "");
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Swap: %f /100", system->MemorySwap()*100);
+            ImGui::ProgressBar(system->MemorySwap(), ImVec2(-1,0), "");
             
             ImGui::End();
         }
         if (show_proc_window){
             ImGui::Begin("Processes", &show_proc_window);   
-            ImGui::Text("Hello from another window!");
+            std::vector<Process>& processes = system->Processes();
+            int vectorsize = system->Processes().size();
+            ImGui::Columns(8,"CPU",true);
             
-            ImGui::End();
+            ImGui::Text("PID");
+            ImGui::NextColumn();
+            ImGui::Text("PPID");
+            ImGui::NextColumn();
+            ImGui::Text("UID");
+            ImGui::NextColumn();
+            ImGui::Text("CPU [%%]");
+            ImGui::NextColumn();
+            ImGui::Text("RAM KB");
+            ImGui::NextColumn();
+            ImGui::Text("TIME+");
+            ImGui::NextColumn();
+            ImGui::Text("STATUS");
+            ImGui::NextColumn();
+            ImGui::Text("COMMAND");
+            ImGui::NextColumn();
+            
+            for (int i = vectorsize-1; i > 0; i--)
+            {
+            if (processes[i].exist())
+            {
+            ImGui::Text("%d", processes[i].Pid());
+            ImGui::NextColumn();
+            ImGui::Text("%s", processes[i].Parent_Pid().c_str());
+            ImGui::NextColumn();
+            ImGui::Text("%s", processes[i].User().c_str());
+            ImGui::NextColumn();
+            ImGui::Text("%4f", processes[i].CpuUtilization()*100);
+            ImGui::NextColumn();
+            ImGui::Text("%s", processes[i].Ram().c_str());
+            ImGui::NextColumn();
+            ImGui::Text("%s", Format::ElapsedTime(processes[i].UpTime()).c_str());
+            ImGui::NextColumn();
+            ImGui::Text("%s", processes[i].status().c_str());
+            ImGui::NextColumn();
+            ImGui::Text("%s", processes[i].Command().c_str());
+            ImGui::NextColumn();
+                
+            }                
+            }
+            UpTime=system->UpTime();
+            
+        ImGui::End();
         }
         if (show_log_window){
             ImGui::Begin("Logger", &show_log_window);   
@@ -217,14 +279,16 @@ int main(int, char**)
             
             ImGui::End();
         }
-
+    
         // Rendering
+        
         ImGui::Render();
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         SDL_GL_SwapWindow(window);
+        
     }
 
     // Cleanup

@@ -34,8 +34,23 @@ float Processor::Utilization() {
     
 }
 
-int Processor::Cpu() {
-    return 0;
+int Processor::CoreCount() {
+    std::string Cpucount;
+    std::vector<std::string> words;
+    std::string path= "/proc/cpuinfo" ;   
+    std::ifstream proc_Sys (path.c_str(), std::ifstream::in);
+    std::string str;
+    while (proc_Sys >> str){                  
+        words.push_back(str);
+    }
+    proc_Sys.close();
+    for (int i = 0; i < words.size(); i++){
+        if (words[i]== "siblings"){
+            Cpucount=words[i+2];
+        }
+    }
+    Processor::Cpu_Count=atoi(Cpucount.c_str());
+    return Processor::Cpu_Count;
     //return Processor::Cpu_Count;
 }
 
