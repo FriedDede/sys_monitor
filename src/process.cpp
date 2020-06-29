@@ -36,23 +36,21 @@ vector<string> Process::procfileread(std::string filename){
         return words;
     }
 }
-
+//Unused ?
 string Process::Name() {
     if (Process::exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
-        string procname;
         for (int i = 0; i < words.size(); i++){
             if (words[i]== "Name:"){
-                procname=words[++i];
+                return words[++i];
             }
         }
-        return procname;
     }
     else{return "Not Found";} 
 }
 
-string Process::status(){
+string Process::Status(){
     if (Process::exist())
     {
         Process::status_buffer.clear();
@@ -61,10 +59,10 @@ string Process::status(){
         {
             if (words[i]== "State:")
             {
-                Process::status_buffer=words[++i] + words[i+2];
+                //Process::status_buffer=words[++i] + words[i+2];
+                return words[i]+words[i+1];
             }
         }
-        return Process::status_buffer;;
     }
     else
     {
@@ -82,8 +80,7 @@ std::string Process::Parent_Pid(){
         std::vector<std::string> words = Process::procfileread("status");
         for (int i = 0; i < words.size(); i++)
         {
-            if (words[i]== "PPid:"){string PPid = words[++i];
-            return PPid;}
+            if (words[i]== "PPid:"){return words[++i];}
         }
     }
     else
@@ -137,15 +134,14 @@ string Process::Ram() {
     if (Process::exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
-        std::string mem;
+        
         for (int i = 0; i < words.size(); i++)
         {
             if (words[i]== "VmSize:")
             {
-                mem=words[++i];
+                return words[++i];
             }
         }
-        return mem;
     }
     else
     {
@@ -158,15 +154,13 @@ string Process::User() {
         if (Process::exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
-        std::string Uid;
         for (int i = 0; i < words.size(); i++)
         {
             if (words[i]== "Uid:")
             {
-                Uid=words[++i];
+                return words[++i];
             }
         }
-        return Uid;
     }
     else
     {
@@ -192,3 +186,43 @@ bool Process::exist(){
     return filestatus;
 }
 
+void Process::Update(){
+
+    Process::name = Process::Name();
+    Process::command = Process::Command();
+    Process::cpu_Usage = Process::CpuUtilization();
+    Process::pP_ID = Process::Parent_Pid();
+    Process::ram_Usage = Process::Ram();
+    Process::status_buffer=Process::Status();
+    Process::uptime = Process::UpTime();
+    Process::u_ID = Process::User();
+
+}
+
+std::string Process::Read_Name(){
+    return name;
+}
+std::string Process::Read_Parent(){
+    return Process::pP_ID;
+}
+std::string Process::Read_User(){
+    return Process::u_ID;
+}
+std::string Process::Read_Command(){
+    return Process::command;
+}
+std::string Process::Read_Ram(){
+    return Process::ram_Usage;
+}
+std::string Process::Read_Status(){
+    return Process::status_buffer;
+}
+int Process::Read_Pid(){
+    return Process::process_ID;
+}
+float Process::Read_Cpu(){
+    return Process::cpu_Usage;
+}
+long int Process::Read_Uptime(){
+    return Process::uptime;
+}

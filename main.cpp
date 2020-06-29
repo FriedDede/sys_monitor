@@ -131,7 +131,9 @@ int main(int, char**)
     std::string Kernel = system->Kernel();
     int Cores = system->Cpu().CoreCount();
     std::string Hostname = system->Hostname();
-    int UpTime= system->UpTime();
+    long UpTime= system->UpTime();
+
+    std::vector<Process>& processes = system->Processes();
 
     while (!done)
     {
@@ -225,13 +227,15 @@ int main(int, char**)
         }
         if (show_proc_window){
             ImGui::Begin("Processes", &show_proc_window);   
-            std::vector<Process>& processes = system->Processes();
-            int vectorsize = system->Processes().size();
-            ImGui::Columns(8,"CPU",true);
+            //processes= system->Processes();
+            int vectorsize = processes.size();
+            ImGui::Columns(9,"CPU",true);
             
             ImGui::Text("PID");
             ImGui::NextColumn();
             ImGui::Text("PPID");
+            ImGui::NextColumn();
+            ImGui::Text("NAME");
             ImGui::NextColumn();
             ImGui::Text("UID");
             ImGui::NextColumn();
@@ -245,32 +249,41 @@ int main(int, char**)
             ImGui::NextColumn();
             ImGui::Text("COMMAND");
             ImGui::NextColumn();
+
+            if ((system->UpTime()-UpTime)>1)
+            {   
+                for (int i = vectorsize-1; i > 0; i--){
+                    if(processes[i].exist())  processes[i].Update();
+                }
+                processes=system->Processes();
+                UpTime=system->UpTime();
+            }
             
+
             for (int i = vectorsize-1; i > 0; i--)
             {
             if (processes[i].exist())
             {
-            ImGui::Text("%d", processes[i].Pid());
+            ImGui::Text("%d", processes[i].Read_Pid());
             ImGui::NextColumn();
-            ImGui::Text("%s", processes[i].Parent_Pid().c_str());
+            ImGui::Text("%s", processes[i].Read_Parent().c_str());
             ImGui::NextColumn();
-            ImGui::Text("%s", processes[i].User().c_str());
+            ImGui::Text("%s", processes[i].Read_Name().c_str());
             ImGui::NextColumn();
-            ImGui::Text("%4f", processes[i].CpuUtilization()*100);
+            ImGui::Text("%s", processes[i].Read_User().c_str());
             ImGui::NextColumn();
-            ImGui::Text("%s", processes[i].Ram().c_str());
+            ImGui::Text("%4f", processes[i].Read_Cpu()*100);
             ImGui::NextColumn();
-            ImGui::Text("%s", Format::ElapsedTime(processes[i].UpTime()).c_str());
+            ImGui::Text("%s", processes[i].Read_Ram().c_str());
             ImGui::NextColumn();
-            ImGui::Text("%s", processes[i].status().c_str());
+            ImGui::Text("%s", Format::ElapsedTime(processes[i].Read_Uptime()).c_str());
             ImGui::NextColumn();
-            ImGui::Text("%s", processes[i].Command().c_str());
+            ImGui::Text("%s", processes[i].Read_Status().c_str());
             ImGui::NextColumn();
-                
+            ImGui::Text("%s", processes[i].Read_Command().c_str());
+            ImGui::NextColumn();   
             }                
             }
-            UpTime=system->UpTime();
-            
         ImGui::End();
         }
         if (show_log_window){

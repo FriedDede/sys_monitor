@@ -87,7 +87,8 @@ std::vector<Process>& System::Processes() {
             int pid = atoi(path.c_str());
             Process temp_process;
             temp_process.Pid_Insec(pid);
-            if(processes_[process_position].Pid() != pid) processes_[process_position]=temp_process;
+            temp_process.Update();
+            if(processes_[process_position].Pid() != pid && process_position<process_number_at_runtime) processes_[process_position]=temp_process;
             process_position++;
         } 
     }
@@ -119,14 +120,12 @@ float System::MemorySwap() {
     return ((float)info.freeswap-(float)info.totalswap)/(float)info.totalswap;
 }
 
-
-
 int System::RunningProcesses() {    
     int running_counter=0;
     std::string running_status= "R(running)";
     for (int i = 0; i < processes_.size(); i++)
     {
-       if (processes_[i].status() == running_status )
+       if (processes_[i].Read_Status() == running_status )
        {
            running_counter++;
        }
