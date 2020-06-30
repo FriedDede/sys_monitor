@@ -143,7 +143,7 @@ int main(int, char**)
     float Memory_Swap = system->MemorySwap();
     float Memory_Buffer = system->MemoryBuffer();
     //Updater Flags
-    long uptime_1= system->UpTime();
+    long uptime_1= 0;
     long uptime_2= 0;
     long uptime_3= 0;
     long uptime_4= 0;
@@ -180,27 +180,19 @@ int main(int, char**)
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();                          
-        ImGui::Text("Windows:");                           // window open/close state
+        ImGui::Text("Windows:");                           
         ImGui::Checkbox("System Info", &show_sys_window);
         ImGui::Checkbox("CPU stat", &show_cpu_window);
         ImGui::Checkbox("Memory stat", &show_mem_window);
         ImGui::Checkbox("Processes", &show_proc_window);
         ImGui::Checkbox("Process Logger", &show_log_window);
-            
-
-        //ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-        //ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-            //if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-            //    counter++;
-            //ImGui::SameLine();
-            //ImGui::Text("counter = %d", counter);
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
         ImGui::Text("%.3f ms/frame ", 1000.0f / ImGui::GetIO().Framerate);
         ImGui::End();
     }    
+        // Windows
         
         if (show_sys_window){
             ImGui::Begin("System info", &show_sys_window);   
