@@ -126,12 +126,28 @@ int main(int, char**)
 
     // Main loop
     bool done = false;
+    //System Variables
     System *system = new System;
     std::string OS = system->OperatingSystem();
     std::string Kernel = system->Kernel();
     int Cores = system->Cpu().CoreCount();
     std::string Hostname = system->Hostname();
-    long UpTime= system->UpTime();
+    int total_processes=system->TotalProcesses();
+    // Cpu window variables
+    float Cpu1m= system->Cpu().Cpumean1m();
+    float Cpu5m= system->Cpu().Cpumean5m();
+    float Cpu= system->Cpu().Utilization();
+    // Memory variables
+    float Memory_Utilization = system->MemoryUtilization();   
+    float Memory_Shared = system->MemoryShared();
+    float Memory_Swap = system->MemorySwap();
+    float Memory_Buffer = system->MemoryBuffer();
+    //Updater Flags
+    long uptime_1= system->UpTime();
+    long uptime_2= 0;
+    long uptime_3= 0;
+    long uptime_4= 0;
+
 
     std::vector<Process>& processes = system->Processes();
 
@@ -182,7 +198,7 @@ int main(int, char**)
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::Text("%.3f ms/frame ", 1000.0f / ImGui::GetIO().Framerate);
         ImGui::End();
     }    
         
@@ -193,35 +209,57 @@ int main(int, char**)
             ImGui::Text("OS:    %s",OS.c_str());
             ImGui::Text("Kernel:    %s",Kernel.c_str());
             ImGui::Text("Hostname:    %s",Hostname.c_str());
-            ImGui::Text("Total Processes:    %d",system->TotalProcesses());
+            ImGui::Text("Total Processes:    %d",total_processes);
             ImGui::Text("Up Time:    %s",Format::ElapsedTime(system->UpTime()).c_str());
             ImGui::Text("Cores:    %d",Cores);
             ImGui::End();
+            if (uptime_2 > 90)
+            {
+                total_processes=system->TotalProcesses();
+                uptime_2=0;
+            }
+            uptime_2++;            
         }
         if (show_cpu_window){
             ImGui::Begin("CPU stat", &show_cpu_window);   
-            float Cpu1m= system->Cpu().Cpumean1m();
-            float Cpu5m= system->Cpu().Cpumean5m();
-            float Cpu= system->Cpu().Utilization();
             ImGui::Text("CPU Usage: %f /100", Cpu*100);
             ImGui::ProgressBar(Cpu, ImVec2(-1,0), "");
             ImGui::Text("CPU Average 1 minute: %f /100", (Cpu1m/(float)Cores)*100);
             ImGui::ProgressBar(Cpu1m/(float)Cores, ImVec2(-1,0), "");
             ImGui::Text("CPU Average 5 minute: %f /100", (Cpu5m/(float)Cores)*100);
             ImGui::ProgressBar(Cpu5m/(float)Cores, ImVec2(-1,0), "");
+
+            if (uptime_3 > 90)
+            {
+                Cpu1m= system->Cpu().Cpumean1m();
+                Cpu5m= system->Cpu().Cpumean5m();
+                Cpu= system->Cpu().Utilization();                
+                uptime_3=0;
+            }
+            uptime_3++;
             
             ImGui::End();
         }
         if (show_mem_window){
             ImGui::Begin("Memory stat", &show_mem_window);   
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Usage: %f /100", system->MemoryUtilization()*100);
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Usage: %f /100", Memory_Utilization*100);
             ImGui::ProgressBar(system->MemoryUtilization(), ImVec2(-1,0), "");
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Shared: %f /100", system->MemoryShared()*100);
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Shared: %f /100", Memory_Shared*100);
             ImGui::ProgressBar(system->MemoryShared(), ImVec2(-1,0), "");
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Buffer: %f /100", system->MemoryBuffer()*100);
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Buffer: %f /100", Memory_Buffer*100);
             ImGui::ProgressBar(system->MemoryBuffer(), ImVec2(-1,0), "");
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Swap: %f /100", system->MemorySwap()*100);
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Swap: %f /100", Memory_Swap*100);
             ImGui::ProgressBar(system->MemorySwap(), ImVec2(-1,0), "");
+
+            if (uptime_4 > 90)
+            {
+                Memory_Utilization = system->MemoryUtilization();   
+                Memory_Shared = system->MemoryShared();
+                Memory_Swap = system->MemorySwap();
+                Memory_Buffer = system->MemoryBuffer();                               
+                uptime_4=0;
+            }
+            uptime_4++;
             
             ImGui::End();
         }
@@ -250,14 +288,15 @@ int main(int, char**)
             ImGui::Text("COMMAND");
             ImGui::NextColumn();
 
-            if ((system->UpTime()-UpTime)>1)
+            if (uptime_1 > 90)
             {   
                 for (int i = vectorsize-1; i > 0; i--){
                     if(processes[i].exist())  processes[i].Update();
                 }
                 processes=system->Processes();
-                UpTime=system->UpTime();
+                uptime_1=0;
             }
+            uptime_1++;
             
 
             for (int i = vectorsize-1; i > 0; i--)

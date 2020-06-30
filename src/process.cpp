@@ -36,7 +36,7 @@ vector<string> Process::procfileread(std::string filename){
         return words;
     }
 }
-//Unused ?
+
 string Process::Name() {
     if (Process::exist())
     {
@@ -59,8 +59,7 @@ string Process::Status(){
         {
             if (words[i]== "State:")
             {
-                //Process::status_buffer=words[++i] + words[i+2];
-                return words[i]+words[i+1];
+                return words[++i]+" "+words[i+2];
             }
         }
     }
