@@ -93,7 +93,9 @@ void Process::Pid_Insec(int buff_pid){
 }
 
 // TODO: Return this process's CPU utilization
-float Process::CpuUtilization() { 
+float Process::CpuUtilization() {
+    if (Process::exist())
+    {
     float s_time, delta_s_time;
     float u_time, delta_u_time;
     float uptime, delta_uptime;
@@ -112,6 +114,11 @@ float Process::CpuUtilization() {
     Process::prev_s_time=s_time;
 
     return (delta_s_time+delta_u_time)/uptime;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 // Return the command that generates the process   
@@ -169,20 +176,27 @@ string Process::User() {
 
 // TODO: Return the age of this process (in seconds)
 long int Process::UpTime() { 
+    if (Process::exist())
+    {
     long int time;
     vector<string>stat=procfileread("stat");
     struct sysinfo info;
     sysinfo(&info);
     time=info.uptime-(atoi(stat[21].c_str())/sysconf(_SC_CLK_TCK));
-    return time; 
+    return time;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 bool Process::exist(){
     std::string str_pid = std::to_string(Process::process_ID);
     std::string path= "/proc/" + str_pid + "/status";   ;
     std::ifstream proc_pid_status (path.c_str(), std::ifstream::in);
-    bool filestatus= (bool)proc_pid_status;
-    return filestatus;
+    bool file_status= (bool)proc_pid_status;
+    return file_status;
 }
 
 void Process::Update(){

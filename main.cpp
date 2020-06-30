@@ -169,7 +169,9 @@ int main(int, char**)
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
                 done = true;
         }
-    {
+        
+        // Main Menù
+        {
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame(window);
@@ -191,7 +193,8 @@ int main(int, char**)
         ImGui::Spacing();
         ImGui::Text("%.3f ms/frame ", 1000.0f / ImGui::GetIO().Framerate);
         ImGui::End();
-    }    
+        }    
+
         // Windows
         
         if (show_sys_window){
