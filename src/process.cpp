@@ -69,10 +69,6 @@ string Process::Status(){
     }  
 }
 
-int Process::Pid() {
-    return process_ID;     
-}
-
 std::string Process::Parent_Pid(){
         if (Process::exist())
     {

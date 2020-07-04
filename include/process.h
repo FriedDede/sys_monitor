@@ -6,20 +6,12 @@
 /*Basic class for Process representation, It contains relevant attributes as shown below*/
 class Process {
  public:
+ 
   void Update();
 
   std::vector<std::string> procfileread(std::string);
-  int Pid();
+  
   void Pid_Insec(int);
-  float CpuUtilization();         
-  std::string Parent_Pid();
-  long int UpTime();                       
-  bool exist();
-  std::string Name();
-  std::string User();                      // TODO: See src/process.cpp
-  std::string Command();                   // TODO: See src/process.cpp
-  std::string Ram();                       // TODO: See src/process.cpp
-  std::string Status();
                          // TODO: See src/process.cpp 
   std::string Read_Name();
   std::string Read_Parent();
@@ -33,6 +25,7 @@ class Process {
 
 
 private:
+
   std::string name;
   int process_ID;
   std::string pP_ID;
@@ -43,12 +36,17 @@ private:
   std::string command;
   long int uptime;
 
+  float CpuUtilization();         
+  std::string Parent_Pid();
+  long int UpTime();                       
+  bool exist();
+  std::string Name();
+  std::string User();                      // TODO: See src/process.cpp
+  std::string Command();                   // TODO: See src/process.cpp
+  std::string Ram();                       // TODO: See src/process.cpp
+  std::string Status();
+
   float prev_u_time=0;
   float prev_s_time=0;
   float prev_uptime=0;
-
-  
-
-
-
 };
