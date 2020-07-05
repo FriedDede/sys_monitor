@@ -109,7 +109,7 @@ float Process::CpuUtilization() {
     Process::prev_u_time=u_time;
     Process::prev_s_time=s_time;
 
-    return (delta_s_time+delta_u_time)/uptime;
+    return (delta_s_time+delta_u_time)/delta_uptime;
     }
     else
     {
@@ -172,9 +172,10 @@ string Process::User() {
 
 // TODO: Return the age of this process (in seconds)
 long int Process::UpTime() { 
+    
     if (Process::exist())
     {
-    long int time;
+    long int time = 0;
     vector<string>stat=procfileread("stat");
     struct sysinfo info;
     sysinfo(&info);
@@ -195,17 +196,33 @@ bool Process::exist(){
     return file_status;
 }
 
-void Process::Update(){
 
-    Process::name = Process::Name();
-    Process::command = Process::Command();
-    Process::cpu_Usage = Process::CpuUtilization();
+void Process::Update(){
+    if (Process::exist())
+    {
+        std::vector<std::string> words = Process::procfileread("status");
+        Process::name = words[1];
+        Process::status_buffer = words[5]+words[6];
+        Process::pP_ID = words[14];
+        Process::u_ID = words[19];
+
+        for (int i = 0; i < words.size(); i++)
+        {
+            if (words[i]== "VmSize:") Process::ram_Usage = words[++i];
+
+        }
+        Process::command = Process::Command();
+        Process::cpu_Usage = Process::CpuUtilization();
+        Process::uptime = Process::UpTime();
+    }
+    
+/***********
     Process::pP_ID = Process::Parent_Pid();
     Process::ram_Usage = Process::Ram();
     Process::status_buffer=Process::Status();
-    Process::uptime = Process::UpTime();
     Process::u_ID = Process::User();
-
+    Process::name = Process::Name();
+***********/
 }
 
 std::string Process::Read_Name(){

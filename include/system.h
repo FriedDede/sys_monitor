@@ -24,9 +24,11 @@ class System {
   std::string Kernel();               
   std::string OperatingSystem();      
   std::string Hostname();
+
   std::vector<Process> processes_;
   
  private:
+ 
   Processor cpu_ ;
   
 };

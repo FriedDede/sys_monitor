@@ -25,9 +25,9 @@ using std::string;
 
 std::vector<string> System::Sysfileread(std::string filename){
     std::vector<std::string> words;
-        std::string path= "/proc/" + filename;   
-        std::ifstream proc_Sys (path.c_str(), std::ifstream::in);
-        std::string str;
+    std::string path= "/proc/" + filename;   
+    std::ifstream proc_Sys (path.c_str(), std::ifstream::in);
+    std::string str;
     while (proc_Sys >> str){                  
         words.push_back(str);
     }
@@ -36,20 +36,17 @@ std::vector<string> System::Sysfileread(std::string filename){
 }
 
 std::string System::OperatingSystem() { 
-    std::string file="sys/kernel/version";
-    std::vector<std::string> words = System::Sysfileread(file);
+    std::vector<std::string> words = System::Sysfileread("sys/kernel/version");
     return words[0]; 
 }
 
 std::string System::Hostname() { 
-    std::string file="sys/kernel/hostname";
-    std::vector<std::string> words = System::Sysfileread(file);
+    std::vector<std::string> words = System::Sysfileread("sys/kernel/hostname");
     return words[0]; 
 }
 
 std::string System::Kernel() {
-    std::string file= "version";
-    std::vector<std::string> words = System::Sysfileread(file);
+    std::vector<std::string> words = System::Sysfileread("version");
     return words[2]; 
 }
 
@@ -117,15 +114,14 @@ float System::MemoryShared() {
 float System::MemorySwap() { 
     struct sysinfo info;
     sysinfo(&info);
-    return ((float)info.freeswap-(float)info.totalswap)/(float)info.totalswap;
+    return ((float)info.totalswap-(float)info.freeswap)/(float)info.totalswap;
 }
 
 int System::RunningProcesses() {    
     int running_counter=0;
-    std::string running_status= "R(running)";
     for (int i = 0; i < processes_.size(); i++)
     {
-       if (processes_[i].Read_Status() == running_status )
+       if (processes_[i].Read_Status() == "R(running)" )
        {
            running_counter++;
        }
