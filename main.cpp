@@ -285,10 +285,11 @@ int main(int, char**)
 
             if (uptime_1 > 90)
             {   
+                processes=system->Processes();
+                vectorsize = processes.size();
                 for (int i = vectorsize-1; i >= 0; i--){
                     processes[i].Update();
                 }
-                processes=system->Processes();
                 uptime_1=0;
             }
             uptime_1++;
