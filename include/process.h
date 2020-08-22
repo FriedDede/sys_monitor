@@ -12,7 +12,7 @@ class Process {
   std::vector<std::string> procfileread(std::string);
   
   void Pid_Insec(int);
-                         // TODO: See src/process.cpp 
+
   std::string Read_Name();
   std::string Read_Parent();
   std::string Read_User();

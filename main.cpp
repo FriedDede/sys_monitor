@@ -217,7 +217,7 @@ int main(int, char**)
         }
         if (show_cpu_window){
             ImGui::Begin("CPU stat", &show_cpu_window);   
-            ImGui::Text("CPU Usage: %f /100", Cpu*100);
+            ImGui::Text("CPU Util: %f /100", Cpu*100);
             ImGui::ProgressBar(Cpu, ImVec2(-1,0), "");
             ImGui::Text("CPU Average 1 minute: %f /100", (Cpu1m/(float)Cores)*100);
             ImGui::ProgressBar(Cpu1m/(float)Cores, ImVec2(-1,0), "");
@@ -237,7 +237,7 @@ int main(int, char**)
         }
         if (show_mem_window){
             ImGui::Begin("Memory stat", &show_mem_window);   
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Usage: %f /100", Memory_Utilization*100);
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Util: %f /100", Memory_Utilization*100);
             ImGui::ProgressBar(Memory_Utilization, ImVec2(-1,0), "");
             ImGui::TextColored(ImVec4(1,1,1,1),"Memory Shared: %f /100", Memory_Shared*100);
             ImGui::ProgressBar(Memory_Shared, ImVec2(-1,0), "");
@@ -272,7 +272,7 @@ int main(int, char**)
             ImGui::NextColumn();
             ImGui::Text("UID");
             ImGui::NextColumn();
-            ImGui::Text("CPU [%%]");
+            ImGui::Text("CORE [%%]");
             ImGui::NextColumn();
             ImGui::Text("RAM KB");
             ImGui::NextColumn();

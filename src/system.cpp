@@ -82,10 +82,12 @@ std::vector<Process>& System::Processes() {
         if (atoi(path.c_str())>0)
         {
             int pid = atoi(path.c_str());
-            Process temp_process;
-            temp_process.Pid_Insec(pid);
             //temp_process.Update();
-            if(processes_[process_position].Read_Pid() != pid && process_position<process_number_at_runtime) processes_[process_position]=temp_process;
+            if(processes_[process_position].Read_Pid() != pid && process_position<process_number_at_runtime) {
+                Process temp_process;
+                temp_process.Pid_Insec(pid);            
+                processes_[process_position]=temp_process;
+            }
             process_position++;
         } 
     }
