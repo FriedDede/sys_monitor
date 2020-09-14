@@ -59,7 +59,7 @@ string Process::Status(){
         {
             if (words[i]== "State:")
             {
-                return words[++i]+" "+words[i+2];
+                return words[++i];
             }
         }
     }

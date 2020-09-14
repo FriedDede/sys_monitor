@@ -123,7 +123,7 @@ int System::RunningProcesses() {
     int running_counter=0;
     for (int i = 0; i < processes_.size(); i++)
     {
-       if (processes_[i].Read_Status() == "R(running)" )
+       if (processes_[i].Read_Status() == "R" )
        {
            running_counter++;
        }

@@ -1,7 +1,3 @@
-// dear imgui: standalone example application for SDL2 + OpenGL
-// If you are new to dear imgui, see examples/README.txt and documentation at the top of imgui.cpp.
-// (SDL is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan/Metal graphics context creation, etc.)
-// (GL3W is a helper library to access OpenGL functions since there is no standard header to access modern OpenGL functions easily. Alternatives are GLEW, Glad, etc.)
 
 #include "imgui/imgui.h"
 #include "imgui/opengl3/imgui_impl_sdl.h"
@@ -17,6 +13,8 @@
 #include <vector>
 #include <thread>
 #include <SDL.h>
+
+#define refresh_interval 45
 
 // About Desktop OpenGL function loaders:
 //  Modern desktop OpenGL doesn't have a standard portable header file to load OpenGL function pointers.
@@ -78,7 +76,7 @@ int main(int, char**)
     SDL_Window* window = SDL_CreateWindow("Sys Monitor OpenGL3", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     SDL_GL_MakeCurrent(window, gl_context);
-    SDL_GL_SetSwapInterval(1); // Enable vsync
+    SDL_GL_SetSwapInterval(2); // Enable vsync
 // Initialize OpenGL loader
 #if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
     bool err = gl3wInit() != 0;
@@ -124,9 +122,9 @@ int main(int, char**)
     bool show_proc_window = false;
     ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    // Main loop
-    bool done = false;
+
     //System Variables
+    //System class can only return this values it does not save those in a class instance
     System *system = new System;
     std::string OS = system->OperatingSystem();
     std::string Kernel = system->Kernel();
@@ -136,7 +134,9 @@ int main(int, char**)
     // Cpu window variables
     float Cpu1m= system->Cpu().Cpumean1m();
     float Cpu5m= system->Cpu().Cpumean5m();
-    float Cpu= system->Cpu().Utilization();
+    float Cpu_Usage= system->Cpu().Utilization();
+    float Cpu_Usage_Log[30];
+    for (int i = 0; i < IM_ARRAYSIZE(Cpu_Usage_Log); i++){Cpu_Usage_Log[i]=0;}
     // Memory variables
     float Memory_Utilization = system->MemoryUtilization();   
     float Memory_Shared = system->MemoryShared();
@@ -148,13 +148,12 @@ int main(int, char**)
     long uptime_3= 0;
     long uptime_4= 0;
 
-
     std::vector<Process>& processes = system->Processes();
-
+    
+    // Main loop
+    bool done = false;
     while (!done)
     {
-        static float f = 0.0f;
-        
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
@@ -208,7 +207,7 @@ int main(int, char**)
             ImGui::Text("Up Time:    %s",Format::ElapsedTime(system->UpTime()).c_str());
             ImGui::Text("Cores:    %d",Cores);
             ImGui::End();
-            if (uptime_2 > 90)
+            if (uptime_2 > refresh_interval)
             {
                 total_processes=system->TotalProcesses();
                 uptime_2=0;
@@ -217,18 +216,29 @@ int main(int, char**)
         }
         if (show_cpu_window){
             ImGui::Begin("CPU stat", &show_cpu_window);   
-            ImGui::Text("CPU Util: %f /100", Cpu*100);
-            ImGui::ProgressBar(Cpu, ImVec2(-1,0), "");
+            ImGui::Text("CPU Util: %f /100", Cpu_Usage*100);
+            //Need to understand how the color push work
+            //ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.0,1.0,0.0,1.0));
+            ImGui::ProgressBar(Cpu_Usage, ImVec2(-1,0), "");
             ImGui::Text("CPU Average 1 minute: %f /100", (Cpu1m/(float)Cores)*100);
             ImGui::ProgressBar(Cpu1m/(float)Cores, ImVec2(-1,0), "");
             ImGui::Text("CPU Average 5 minute: %f /100", (Cpu5m/(float)Cores)*100);
             ImGui::ProgressBar(Cpu5m/(float)Cores, ImVec2(-1,0), "");
-
-            if (uptime_3 > 90)
+            if (Cpu_Usage_Log[IM_ARRAYSIZE(Cpu_Usage_Log)-1]!=Cpu_Usage*100){
+                for (int j = 0; j < IM_ARRAYSIZE(Cpu_Usage_Log); j++){Cpu_Usage_Log[j]=Cpu_Usage_Log[j+1];}
+                Cpu_Usage_Log[IM_ARRAYSIZE(Cpu_Usage_Log)-1]=Cpu_Usage*100;
+            }
+            char overlay[32];
+            sprintf(overlay, "avg %f", Cpu1m/(float)Cores*100);
+            ImGui::Text("CPU Util:");
+            ImGui::SameLine();
+            ImGui::PlotLines("", Cpu_Usage_Log, IM_ARRAYSIZE(Cpu_Usage_Log), 0, overlay, 0, 100, ImVec2(0,80));
+            
+            if (uptime_3 > refresh_interval)
             {
                 Cpu1m= system->Cpu().Cpumean1m();
                 Cpu5m= system->Cpu().Cpumean5m();
-                Cpu= system->Cpu().Utilization();                
+                Cpu_Usage= system->Cpu().Utilization();                
                 uptime_3=0;
             }
             uptime_3++;
@@ -246,7 +256,7 @@ int main(int, char**)
             ImGui::TextColored(ImVec4(1,1,1,1),"Memory Swap: %f /100", Memory_Swap*100);
             ImGui::ProgressBar(Memory_Swap, ImVec2(-1,0), "");
 
-            if (uptime_4 > 90)
+            if (uptime_4 > refresh_interval)
             {
                 Memory_Utilization = system->MemoryUtilization();   
                 Memory_Shared = system->MemoryShared();
@@ -283,7 +293,7 @@ int main(int, char**)
             ImGui::Text("COMMAND");
             ImGui::NextColumn();
 
-            if (uptime_1 > 90)
+            if (uptime_1 > refresh_interval)
             {   
                 processes=system->Processes();
                 vectorsize = processes.size();
@@ -344,7 +354,10 @@ int main(int, char**)
         if (show_log_window){
             ImGui::Begin("Logger", &show_log_window);   
             ImGui::Text("Hello from another window!");
-            
+            {
+                
+            }
+            //ImGui::ShowDemoWindow(&show_log_window);
             ImGui::End();
         }
     
