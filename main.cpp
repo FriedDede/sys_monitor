@@ -135,14 +135,14 @@ int main(int, char**)
     float Cpu1m= system->Cpu().Cpumean1m();
     float Cpu5m= system->Cpu().Cpumean5m();
     float Cpu_Usage= system->Cpu().Utilization();
-    float Cpu_Usage_Log[30];
-    for (int i = 0; i < IM_ARRAYSIZE(Cpu_Usage_Log); i++){Cpu_Usage_Log[i]=0;}
+    char overlay[32];
+    for (int i = 0; i < IM_ARRAYSIZE(system->Cpu().Cpu_Usage_Log); i++){system->Cpu().Cpu_Usage_Log[i]=0;}
     // Memory variables
     float Memory_Utilization = system->MemoryUtilization();   
     float Memory_Shared = system->MemoryShared();
     float Memory_Swap = system->MemorySwap();
     float Memory_Buffer = system->MemoryBuffer();
-    //Updater Flags
+    //Updater FlagsS
     long uptime_1= 0;
     long uptime_2= 0;
     long uptime_3= 0;
@@ -216,24 +216,18 @@ int main(int, char**)
         }
         if (show_cpu_window){
             ImGui::Begin("CPU stat", &show_cpu_window);   
-            ImGui::Text("CPU Util: %f /100", Cpu_Usage*100);
+            ImGui::Text("CPU Util: %f %%", Cpu_Usage*100);
             //Need to understand how the color push work
             //ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.0,1.0,0.0,1.0));
             ImGui::ProgressBar(Cpu_Usage, ImVec2(-1,0), "");
-            ImGui::Text("CPU Average 1 minute: %f /100", (Cpu1m/(float)Cores)*100);
+            ImGui::Text("CPU Average 1 minute: %f %%", (Cpu1m/(float)Cores)*100);
             ImGui::ProgressBar(Cpu1m/(float)Cores, ImVec2(-1,0), "");
-            ImGui::Text("CPU Average 5 minute: %f /100", (Cpu5m/(float)Cores)*100);
+            ImGui::Text("CPU Average 5 minute: %f %%", (Cpu5m/(float)Cores)*100);
             ImGui::ProgressBar(Cpu5m/(float)Cores, ImVec2(-1,0), "");
-            if (Cpu_Usage_Log[IM_ARRAYSIZE(Cpu_Usage_Log)-1]!=Cpu_Usage*100){
-                for (int j = 0; j < IM_ARRAYSIZE(Cpu_Usage_Log); j++){Cpu_Usage_Log[j]=Cpu_Usage_Log[j+1];}
-                Cpu_Usage_Log[IM_ARRAYSIZE(Cpu_Usage_Log)-1]=Cpu_Usage*100;
-            }
-            char overlay[32];
-            sprintf(overlay, "avg %f", Cpu1m/(float)Cores*100);
-            ImGui::Text("CPU Util:");
+            sprintf(overlay, "CPU Util (45s): \n\nAVG %f", Cpu1m/(float)Cores*100);
+            ImGui::Text(overlay);
             ImGui::SameLine();
-            ImGui::PlotLines("", Cpu_Usage_Log, IM_ARRAYSIZE(Cpu_Usage_Log), 0, overlay, 0, 100, ImVec2(0,80));
-            
+            ImGui::PlotLines("", system->Cpu().Cpu_Usage_Log, IM_ARRAYSIZE(system->Cpu().Cpu_Usage_Log), 0, "", 0, 100, ImVec2(0,80));
             if (uptime_3 > refresh_interval)
             {
                 Cpu1m= system->Cpu().Cpumean1m();
@@ -247,13 +241,13 @@ int main(int, char**)
         }
         if (show_mem_window){
             ImGui::Begin("Memory stat", &show_mem_window);   
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Util: %f /100", Memory_Utilization*100);
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Util: %f %%", Memory_Utilization*100);
             ImGui::ProgressBar(Memory_Utilization, ImVec2(-1,0), "");
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Shared: %f /100", Memory_Shared*100);
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Shared: %f %%", Memory_Shared*100);
             ImGui::ProgressBar(Memory_Shared, ImVec2(-1,0), "");
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Buffer: %f /100", Memory_Buffer*100);
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Buffer: %f %%", Memory_Buffer*100);
             ImGui::ProgressBar(Memory_Buffer, ImVec2(-1,0), "");
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Swap: %f /100", Memory_Swap*100);
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Swap: %f %%", Memory_Swap*100);
             ImGui::ProgressBar(Memory_Swap, ImVec2(-1,0), "");
 
             if (uptime_4 > refresh_interval)
@@ -284,9 +278,9 @@ int main(int, char**)
             ImGui::NextColumn();
             ImGui::Text("CORE [%%]");
             ImGui::NextColumn();
-            ImGui::Text("RAM KB");
+            ImGui::Text("RAM [KB]");
             ImGui::NextColumn();
-            ImGui::Text("TIME+");
+            ImGui::Text("UPTIME");
             ImGui::NextColumn();
             ImGui::Text("STATUS");
             ImGui::NextColumn();

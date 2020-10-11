@@ -23,7 +23,7 @@ OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 UNAME_S := $(shell uname -s)
 
 CXXFLAGS = -Iimgui/ -Iimgui/opengl3/ -Isrc/ -Iinclude/
-CXXFLAGS += -g -Wall -Wformat
+CXXFLAGS += -g -Wall -Wformat 
 LIBS =
 
 ##---------------------------------------------------------------------

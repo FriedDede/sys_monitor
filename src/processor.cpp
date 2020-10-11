@@ -24,12 +24,15 @@ bool get_cpu_times(size_t &idle_time, size_t &total_time) {
 }
 
 float Processor::Utilization() {  
-    size_t idle_time, total_time; get_cpu_times(idle_time, total_time);
+    size_t idle_time=0, total_time=0; get_cpu_times(idle_time, total_time);
     const float idle_time_delta = idle_time - Processor::CPU_Previous_Idle;
     const float total_time_delta = total_time - Processor::CPU_Previous_Total;
     const float utilization = (1.0 - idle_time_delta / total_time_delta);
     Processor::CPU_Previous_Idle = idle_time;
     Processor::CPU_Previous_Total = total_time;
+
+    for (int j = 0; j < 29; j++){Processor::Cpu_Usage_Log[j]=Processor::Cpu_Usage_Log[j+1];}
+        Processor::Cpu_Usage_Log[29]=utilization*100;
     return utilization;
     
 }
@@ -51,7 +54,6 @@ int Processor::CoreCount() {
     }
     Processor::Cpu_Count=atoi(Cpucount.c_str());
     return Processor::Cpu_Count;
-    //return Processor::Cpu_Count;
 }
 
 float Processor::Cpumean1m() { 

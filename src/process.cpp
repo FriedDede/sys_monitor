@@ -14,7 +14,7 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-vector<string> Process::procfileread(std::string filename){
+vector<string>  Process::procfileread(std::string filename){
        std::vector<std::string> words;
     if (Process::exist())
     {
@@ -37,7 +37,7 @@ vector<string> Process::procfileread(std::string filename){
     }
 }
 
-string Process::Name() {
+string          Process::Name() {
     if (Process::exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
@@ -50,7 +50,7 @@ string Process::Name() {
     else{return "Not Found";} 
 }
 
-string Process::Status(){
+string          Process::Status(){
     if (Process::exist())
     {
         Process::status_buffer.clear();
@@ -69,7 +69,7 @@ string Process::Status(){
     }  
 }
 
-std::string Process::Parent_Pid(){
+std::string     Process::Parent_Pid(){
         if (Process::exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
@@ -84,12 +84,12 @@ std::string Process::Parent_Pid(){
     } 
 }    
 
-void Process::Pid_Insec(int buff_pid){
+void            Process::Pid_Insec(int buff_pid){
     Process::process_ID=buff_pid;
 }
 
 // TODO: Return this process's CPU utilization
-float Process::CpuUtilization() {
+float           Process::CpuUtilization() {
     if (Process::exist())
     {
     float s_time, delta_s_time;
@@ -118,7 +118,7 @@ float Process::CpuUtilization() {
 }
 
 // Return the command that generates the process   
-string Process::Command() {
+string          Process::Command() {
     if (Process::exist())
     {
         std::vector<std::string> words = Process::procfileread("comm");
@@ -132,7 +132,7 @@ string Process::Command() {
 }
 
 // Return this process's memory utilization
-string Process::Ram() {
+string          Process::Ram() {
     if (Process::exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
@@ -152,7 +152,7 @@ string Process::Ram() {
 }
 
 // Return the user (id) that generated this process
-string Process::User() {
+string          Process::User() {
         if (Process::exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
@@ -171,7 +171,7 @@ string Process::User() {
 }
 
 // TODO: Return the age of this process (in seconds)
-long int Process::UpTime() { 
+long int        Process::UpTime() { 
     
     if (Process::exist())
     {
@@ -188,7 +188,7 @@ long int Process::UpTime() {
     }
 }
 
-bool Process::exist(){
+bool            Process::exist(){
     std::string str_pid = std::to_string(Process::process_ID);
     std::string path= "/proc/" + str_pid + "/status";   ;
     std::ifstream proc_pid_status (path.c_str(), std::ifstream::in);
@@ -196,8 +196,7 @@ bool Process::exist(){
     return file_status;
 }
 
-
-void Process::Update(){
+void            Process::Update(){
     if (Process::exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
@@ -243,12 +242,12 @@ std::string Process::Read_Ram(){
 std::string Process::Read_Status(){
     return Process::status_buffer;
 }
-int Process::Read_Pid(){
+int         Process::Read_Pid(){
     return Process::process_ID;
 }
-float Process::Read_Cpu(){
+float       Process::Read_Cpu(){
     return Process::cpu_Usage;
 }
-long int Process::Read_Uptime(){
+long int    Process::Read_Uptime(){
     return Process::uptime;
 }

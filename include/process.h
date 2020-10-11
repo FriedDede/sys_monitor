@@ -7,46 +7,42 @@
 class Process {
  public:
  
-  void Update();
-
-  std::vector<std::string> procfileread(std::string);
-  
-  void Pid_Insec(int);
-
+  void        Update();
+  std::vector<std::string> procfileread(std::string);  
+  void        Pid_Insec(int);
   std::string Read_Name();
   std::string Read_Parent();
   std::string Read_User();
   std::string Read_Command();
   std::string Read_Ram();
   std::string Read_Status();
-  int Read_Pid();
-  float Read_Cpu();
-  long int Read_Uptime();
-
+  int         Read_Pid();
+  float       Read_Cpu();
+  long int    Read_Uptime();
 
 private:
 
   std::string name;
-  int process_ID = 0;
+  int         process_ID = 0;
   std::string pP_ID;
   std::string u_ID;
-  float cpu_Usage = 0;
+  float       cpu_Usage = 0;
   std::string ram_Usage;
   std::string status_buffer;
   std::string command;
-  long int uptime = 0;
+  long int    uptime = 0;
 
-  float CpuUtilization();         
+  float       CpuUtilization();         
   std::string Parent_Pid();
-  long int UpTime();                       
-  bool exist();
+  long int    UpTime();                       
+  bool        exist();
   std::string Name();
   std::string User();                      // TODO: See src/process.cpp
   std::string Command();                   // TODO: See src/process.cpp
   std::string Ram();                       // TODO: See src/process.cpp
   std::string Status();
 
-  float prev_u_time=0;
-  float prev_s_time=0;
-  float prev_uptime=0;
+  float       prev_u_time=0;
+  float       prev_s_time=0;
+  float       prev_uptime=0;
 };

@@ -9,6 +9,7 @@ class Processor {
   int CoreCount();
   float Cpumean1m();
   float Cpumean5m();
+  float Cpu_Usage_Log[30];
   // TODO: Declare any necessary private members
  
  private:
