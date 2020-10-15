@@ -5,14 +5,14 @@ class Processor {
     
  public:
 
-  float Utilization();  // TODO: See src/processor.cpp
-  int CoreCount();
-  float Cpumean1m();
-  float Cpumean5m();
-  float Cpu_Usage_Log[30];
-  // TODO: Declare any necessary private members
- 
+  float     Utilization();  
+  int       CoreCount();
+  float     Cpumean1m();
+  float     Cpumean5m();
+  float     Cpu_Usage_Log[30];
+  
  private:
-    int Cpu_Count;
-    float CPU_Previous_Idle=0,CPU_Previous_Total=0;
+    int     Cpu_Count;
+    float   CPU_Previous_Idle = 0;
+    float   CPU_Previous_Total = 0;
 };
