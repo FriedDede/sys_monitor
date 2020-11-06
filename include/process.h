@@ -19,7 +19,7 @@ class Process {
   int         Read_Pid();
   float       Read_Cpu();
   long int    Read_Uptime();
-
+  void        Log(int,bool[9]);
 private:
 
   std::string name;

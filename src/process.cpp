@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <sys/sysinfo.h>
+#include <thread>
 
 #include "process.h"
 #include "system.h"
@@ -222,6 +223,31 @@ void            Process::Update(){
     Process::u_ID = Process::User();
     Process::name = Process::Name();
 ***********/
+}
+
+void            Process::Log(int round,bool flags[9]){
+
+    Process::Update();
+    std::string filename = "P_"+to_string(process_ID)+"_Log";
+    std::ofstream Log_file (filename.c_str(), std::ofstream::out);
+    int i=0;
+    Log_file << "SyS Monitor Log File";
+    Log_file << "\n PID \t CPU \t MEM \t TIME";
+    
+    while(i<round){
+      Log_file << "\n ";
+      Log_file << std::to_string(process_ID).c_str();
+      Log_file << "\t";
+      Log_file << std::to_string(Process::Read_Cpu()).c_str();
+      Log_file << "\t";
+      Log_file << Process::Read_Ram().c_str();
+      Log_file << "\t";
+      Log_file << std::to_string(Process::Read_Uptime()).c_str();
+      Log_file << "\t";      
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+      i++;
+    }
+  std::terminate;
 }
 
 std::string Process::Read_Name(){

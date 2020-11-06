@@ -147,6 +147,12 @@ int main(int, char**)
     long uptime_2= 0;
     long uptime_3= 0;
     long uptime_4= 0;
+    //Logger Var
+    int ID=0;
+    int round=9;
+    bool flags[9];
+    Process tolog;
+    bool logging;
 
     std::vector<Process>& processes = system->Processes();
     
@@ -347,14 +353,16 @@ int main(int, char**)
         }
         if (show_log_window){
             ImGui::Begin("Logger", &show_log_window);   
-            ImGui::Text("Hello from another window!");
-            {
-                
+            /*ImGui::Checkbox("LOG", &logging);
+            tolog.Pid_Insec(ID);
+            if (logging)
+            {  
+                tolog.Update();
+                tolog.Log(1,flags)
             }
-            //ImGui::ShowDemoWindow(&show_log_window);
+            //ImGui::ShowDemoWindow(&show_log_window);*/
             ImGui::End();
         }
-    
         // Rendering
         
         ImGui::Render();
