@@ -107,8 +107,8 @@ int main(int, char**)
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
     // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    //ImGui::StyleColorsClassic();
+    //ImGui::StyleColorsDark();
+    ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer bindings
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
@@ -120,7 +120,7 @@ int main(int, char**)
     bool show_mem_window = false;
     bool show_log_window = false;
     bool show_proc_window = false;
-    ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    ImVec4 clear_color = ImVec4(0.1f, 0.1f, 0.1f, 0.1f);
 
 
     //System Variables
@@ -206,12 +206,30 @@ int main(int, char**)
             ImGui::Begin("System info", &show_sys_window);   
             //if (ImGui::Button("Close Me"))
             //    show_sys_window = false;
-            ImGui::Text("OS:    %s",OS.c_str());
-            ImGui::Text("Kernel:    %s",Kernel.c_str());
-            ImGui::Text("Hostname:    %s",Hostname.c_str());
-            ImGui::Text("Total Processes:    %d",total_processes);
-            ImGui::Text("Up Time:    %s",Format::ElapsedTime(system->UpTime()).c_str());
-            ImGui::Text("Cores:    %d",Cores);
+            ImGui::Columns(2,"System attributes:",true);
+            ImGui::Text("OS:");
+            ImGui::NextColumn();
+            ImGui::Text(OS.c_str());
+            ImGui::NextColumn();
+            ImGui::Text("Kernel:");
+            ImGui::NextColumn();
+            ImGui::Text(Kernel.c_str());
+            ImGui::NextColumn();
+            ImGui::Text("Hostname:");
+            ImGui::NextColumn();
+            ImGui::Text(Hostname.c_str());
+            ImGui::NextColumn();
+            ImGui::Text("Processes:");
+            ImGui::NextColumn();
+            ImGui::Text("%d",total_processes);
+            ImGui::NextColumn();
+            ImGui::Text("Uptime:");
+            ImGui::NextColumn();
+            ImGui::Text(Format::ElapsedTime(system->UpTime()).c_str());
+            ImGui::NextColumn();
+            ImGui::Text("Cores:");
+            ImGui::NextColumn();
+            ImGui::Text("%d",Cores);
             ImGui::End();
             if (uptime_2 > refresh_interval)
             {
