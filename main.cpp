@@ -7,6 +7,7 @@
 #include "include/process.h"
 #include "include/processor.h"
 #include "include/system.h"
+#include "include/logger.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -150,9 +151,10 @@ int main(int, char**)
     //Logger Var
     int ID=0;
     int round=9;
-    bool flags[9];
-    Process tolog;
-    bool logging;
+    bool logging =false;
+    bool background_logging =false;
+    long log_start_time = 0;
+    int background_round=0;
 
     std::vector<Process>& processes = system->Processes();
     
@@ -195,8 +197,16 @@ int main(int, char**)
         ImGui::Checkbox("Process Logger", &show_log_window);
         ImGui::Spacing();
         ImGui::Separator();
-        ImGui::Spacing();
+        ImGui::Spacing();        
         ImGui::Text("%.3f ms/frame ", 1000.0f / ImGui::GetIO().Framerate);
+        if (background_logging)
+        {
+            ImGui::Text("Logging pid %d", ID);
+            if ((system->UpTime()-log_start_time)>= background_round)
+            {
+                background_logging=false;
+            }
+        }
         ImGui::End();
         }    
 
@@ -370,15 +380,22 @@ int main(int, char**)
         ImGui::End();
         }
         if (show_log_window){
+            background_logging=false;
             ImGui::Begin("Logger", &show_log_window);   
-            /*ImGui::Checkbox("LOG", &logging);
-            tolog.Pid_Insec(ID);
-            if (logging)
-            {  
-                tolog.Update();
-                tolog.Log(1,flags)
+            ImGui::InputInt("Pid",&ID,1,100,0);
+            ImGui::InputInt("Cycles",&round,1,100,0);
+            ImGui::Checkbox("LOG", &logging);
+            if (true == logging)
+            {
+                std::thread Logger(Logger::Proc,ID,round);
+                Logger.detach();
+                log_start_time=system->UpTime();
+                logging = false;
+                show_log_window=false;
+                background_logging=true;
+                background_round=round;
             }
-            //ImGui::ShowDemoWindow(&show_log_window);*/
+            //ImGui::ShowDemoWindow(&show_log_window);
             ImGui::End();
         }
         // Rendering

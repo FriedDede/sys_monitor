@@ -18,13 +18,13 @@ EXE = Sys_Monitor_opengl3
 SOURCES = main.cpp
 SOURCES += imgui/opengl3/imgui_impl_sdl.cpp imgui/opengl3/imgui_impl_opengl3.cpp
 SOURCES += imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_widgets.cpp
-SOURCES += src/format.cpp src/process.cpp src/system.cpp src/processor.cpp
+SOURCES += src/format.cpp src/process.cpp src/system.cpp src/processor.cpp src/logger.cpp
 OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 UNAME_S := $(shell uname -s)
 
-CXXFLAGS = -Iimgui/ -Iimgui/opengl3/ -Isrc/ -Iinclude/
+CXXFLAGS = -Iimgui/ -Iimgui/opengl3/ -Isrc/ -Iinclude/ 
 CXXFLAGS += -g -Wall -Wformat 
-LIBS =
+LIBS = -lpthread
 
 ##---------------------------------------------------------------------
 ## OPENGL LOADER
