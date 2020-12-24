@@ -250,15 +250,15 @@ int main(int, char**)
         }
         if (show_cpu_window){
             ImGui::Begin("CPU stat", &show_cpu_window);   
-            ImGui::Text("CPU Util: %f %%", Cpu_Usage*100);
+            ImGui::Text("CPU Util: %d [%]", (int)(Cpu_Usage*100));
             //Need to understand how the color push work
             //ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.0,1.0,0.0,1.0));
             ImGui::ProgressBar(Cpu_Usage, ImVec2(-1,0), "");
-            ImGui::Text("CPU Average 1 minute: %f %%", (Cpu1m/(float)Cores)*100);
+            ImGui::Text("CPU Average 1 minute: %d [%]", (int)(Cpu1m/(float)Cores)*100);
             ImGui::ProgressBar(Cpu1m/(float)Cores, ImVec2(-1,0), "");
-            ImGui::Text("CPU Average 5 minute: %f %%", (Cpu5m/(float)Cores)*100);
+            ImGui::Text("CPU Average 5 minute: %d [%]", (int)(Cpu5m/(float)Cores)*100);
             ImGui::ProgressBar(Cpu5m/(float)Cores, ImVec2(-1,0), "");
-            sprintf(overlay, "CPU Util (45s): \n\nAVG %f", Cpu1m/(float)Cores*100);
+            sprintf(overlay, "CPU Util (45s): \n\nAVG: %d [%]", (int)(Cpu1m/(float)Cores*100));
             ImGui::Text(overlay);
             ImGui::SameLine();
             ImGui::PlotLines("", system->Cpu().Cpu_Usage_Log, IM_ARRAYSIZE(system->Cpu().Cpu_Usage_Log), 0, "", 0, 100, ImVec2(0,80));
@@ -275,13 +275,13 @@ int main(int, char**)
         }
         if (show_mem_window){
             ImGui::Begin("Memory stat", &show_mem_window);   
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Util: %f %%", Memory_Utilization*100);
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Util: %d [%]", (int)(Memory_Utilization*100));
             ImGui::ProgressBar(Memory_Utilization, ImVec2(-1,0), "");
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Shared: %f %%", Memory_Shared*100);
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Shared: %d [%]", (int)(Memory_Shared*100));
             ImGui::ProgressBar(Memory_Shared, ImVec2(-1,0), "");
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Buffer: %f %%", Memory_Buffer*100);
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Buffer: %d [%]", (int)(Memory_Buffer*100));
             ImGui::ProgressBar(Memory_Buffer, ImVec2(-1,0), "");
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Swap: %f %%", Memory_Swap*100);
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Swap: %d [%]", (int)(Memory_Swap*100));
             ImGui::ProgressBar(Memory_Swap, ImVec2(-1,0), "");
 
             if (uptime_4 > refresh_interval)
@@ -344,7 +344,7 @@ int main(int, char**)
                     ImGui::NextColumn();
                     ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", processes[i].Read_User().c_str());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%4f", processes[i].Read_Cpu()*100);
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%d", (int)(processes[i].Read_Cpu()*100));
                     ImGui::NextColumn();
                     ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", processes[i].Read_Ram().c_str());
                     ImGui::NextColumn();
@@ -365,7 +365,7 @@ int main(int, char**)
                     ImGui::NextColumn();
                     ImGui::Text("%s", processes[i].Read_User().c_str());
                     ImGui::NextColumn();
-                    ImGui::Text("%4f", processes[i].Read_Cpu()*100);
+                    ImGui::Text("%d", (int)(processes[i].Read_Cpu()*100));
                     ImGui::NextColumn();
                     ImGui::Text("%s", processes[i].Read_Ram().c_str());
                     ImGui::NextColumn();
