@@ -156,8 +156,6 @@ int main(int, char**)
     long log_start_time = 0;
     int background_round=0;
 
-    std::vector<Process>& processes = system->Processes();
-    
     // Main loop
     bool done = false;
     while (!done)
@@ -299,7 +297,7 @@ int main(int, char**)
         if (show_proc_window){
             ImGui::Begin("Processes", &show_proc_window);   
             //processes= system->Processes();
-            int vectorsize = processes.size();
+            int vectorsize = system->processes_.size();
             ImGui::Columns(9,"CPU",true);
             
             ImGui::Text("PID");
@@ -323,10 +321,10 @@ int main(int, char**)
 
             if (uptime_1 > refresh_interval)
             {   
-                processes=system->Processes();
-                vectorsize = processes.size();
+                system->Processes();
+                vectorsize = system->processes_.size();
                 for (int i = vectorsize-1; i >= 0; i--){
-                    processes[i].Update();
+                    system->processes_[i].Update();
                 }
                 uptime_1=0;
             }
@@ -334,46 +332,46 @@ int main(int, char**)
             
             for (int i = vectorsize-1; i >= 0; i--)
             {
-                if (processes[i].Read_Cpu() > 0.01)
+                if (system->processes_[i].Read_Cpu() > 0.01)
                 {
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%d", processes[i].Read_Pid());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%d", system->processes_[i].Read_Pid());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", processes[i].Read_Parent().c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system->processes_[i].Read_Parent().c_str());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", processes[i].Read_Name().c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system->processes_[i].Read_Name().c_str());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", processes[i].Read_User().c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system->processes_[i].Read_User().c_str());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%d", (int)(processes[i].Read_Cpu()*100));
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%d", (int)(system->processes_[i].Read_Cpu()*100));
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", processes[i].Read_Ram().c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system->processes_[i].Read_Ram().c_str());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", Format::ElapsedTime(processes[i].Read_Uptime()).c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", Format::ElapsedTime(system->processes_[i].Read_Uptime()).c_str());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", processes[i].Read_Status().c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system->processes_[i].Read_Status().c_str());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", processes[i].Read_Command().c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system->processes_[i].Read_Command().c_str());
                     ImGui::NextColumn();
                 }
                 else
                 {
-                    ImGui::Text("%d", processes[i].Read_Pid());
+                    ImGui::Text("%d", system->processes_[i].Read_Pid());
                     ImGui::NextColumn();
-                    ImGui::Text("%s", processes[i].Read_Parent().c_str());
+                    ImGui::Text("%s", system->processes_[i].Read_Parent().c_str());
                     ImGui::NextColumn();
-                    ImGui::Text("%s", processes[i].Read_Name().c_str());
+                    ImGui::Text("%s", system->processes_[i].Read_Name().c_str());
                     ImGui::NextColumn();
-                    ImGui::Text("%s", processes[i].Read_User().c_str());
+                    ImGui::Text("%s", system->processes_[i].Read_User().c_str());
                     ImGui::NextColumn();
-                    ImGui::Text("%d", (int)(processes[i].Read_Cpu()*100));
+                    ImGui::Text("%d", (int)(system->processes_[i].Read_Cpu()*100));
                     ImGui::NextColumn();
-                    ImGui::Text("%s", processes[i].Read_Ram().c_str());
+                    ImGui::Text("%s", system->processes_[i].Read_Ram().c_str());
                     ImGui::NextColumn();
-                    ImGui::Text("%s", Format::ElapsedTime(processes[i].Read_Uptime()).c_str());
+                    ImGui::Text("%s", Format::ElapsedTime(system->processes_[i].Read_Uptime()).c_str());
                     ImGui::NextColumn();
-                    ImGui::Text("%s", processes[i].Read_Status().c_str());
+                    ImGui::Text("%s", system->processes_[i].Read_Status().c_str());
                     ImGui::NextColumn();
-                    ImGui::Text("%s", processes[i].Read_Command().c_str());
+                    ImGui::Text("%s", system->processes_[i].Read_Command().c_str());
                     ImGui::NextColumn();                
                 }
             }
