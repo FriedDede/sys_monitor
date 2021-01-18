@@ -124,21 +124,21 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.1f, 0.1f, 0.1f, 0.1f);
 
 
-    //System Variables
-    //System class can only return this values it does not save those in a class instance
+    //System
+    //System class only return this values it does not save those in a class instance
     System *system = new System;
     std::string OS = system->OperatingSystem();
     std::string Kernel = system->Kernel();
     int Cores = system->Cpu().CoreCount();
     std::string Hostname = system->Hostname();
     int total_processes=system->TotalProcesses();
-    // Cpu window variables
+    // Cpu window 
     float Cpu1m= system->Cpu().Cpumean1m();
     float Cpu5m= system->Cpu().Cpumean5m();
     float Cpu_Usage= system->Cpu().Utilization();
     char overlay[32];
     for (int i = 0; i < IM_ARRAYSIZE(system->Cpu().Cpu_Usage_Log); i++){system->Cpu().Cpu_Usage_Log[i]=0;}
-    // Memory variables
+    // Memory 
     float Memory_Utilization = system->MemoryUtilization();   
     float Memory_Shared = system->MemoryShared();
     float Memory_Swap = system->MemorySwap();
@@ -148,7 +148,7 @@ int main(int, char**)
     long uptime_2= 0;
     long uptime_3= 0;
     long uptime_4= 0;
-    //Logger Var
+    //Logger 
     int ID=0;
     int round=9;
     bool logging =false;

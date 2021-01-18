@@ -5,8 +5,8 @@
 #include <vector>
 /*Basic class for Process representation, It contains relevant attributes as shown below*/
 class Process {
+
  public:
- 
   void        Update();
   std::vector<std::string> procfileread(std::string);  
   void        Pid_Insec(int);
@@ -20,8 +20,8 @@ class Process {
   float       Read_Cpu();
   long int    Read_Uptime();
   void        Log(int);
-private:
 
+ private:
   std::string name;
   int         process_ID = 0;
   std::string pP_ID;
