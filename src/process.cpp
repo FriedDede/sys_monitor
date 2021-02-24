@@ -42,11 +42,7 @@ string          Process::Name() {
     if (Process::exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
-        for (int i = 0; i < words.size(); i++){
-            if (words[i]== "Name:"){
-                return words[++i];
-            }
-        }
+        return words[1];
     }
     else{return "Not Found";} 
 }
@@ -56,13 +52,7 @@ string          Process::Status(){
     {
         Process::status_buffer.clear();
         std::vector<std::string> words = Process::procfileread("status");
-        for (int i = 0; i < words.size(); i++)
-        {
-            if (words[i]== "State:")
-            {
-                return words[++i];
-            }
-        }
+                return words[5]+words[6];
     }
     else
     {
@@ -74,10 +64,7 @@ std::string     Process::Parent_Pid(){
         if (Process::exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
-        for (int i = 0; i < words.size(); i++)
-        {
-            if (words[i]== "PPid:"){return words[++i];}
-        }
+        return words[14];
     }
     else
     {
@@ -157,13 +144,7 @@ string          Process::User() {
         if (Process::exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
-        for (int i = 0; i < words.size(); i++)
-        {
-            if (words[i]== "Uid:")
-            {
-                return words[++i];
-            }
-        }
+        return words[19];
     }
     else
     {

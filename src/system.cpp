@@ -76,9 +76,7 @@ std::vector<Process>& System::Processes() {
         files.push_back(string(dirp->d_name));
     }
 
-    for (int i = 2; i < files.size(); i++){
-        std::string path = files[i];
-        
+    for (auto path : files){
         if (atoi(path.c_str())>0)
         {
             int pid = atoi(path.c_str());
@@ -121,9 +119,9 @@ float System::MemorySwap() {
 
 int System::RunningProcesses() {    
     int running_counter=0;
-    for (int i = 0; i < processes_.size(); i++)
+    for (auto & indx_process : processes_)
     {
-       if (processes_[i].Read_Status() == "R" )
+        if (indx_process.Read_Status() == "R" )
        {
            running_counter++;
        }

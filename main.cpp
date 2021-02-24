@@ -137,7 +137,7 @@ int main(int, char**)
     float Cpu5m= system->Cpu().Cpumean5m();
     float Cpu_Usage= system->Cpu().Utilization();
     char overlay[32];
-    for (int i = 0; i < IM_ARRAYSIZE(system->Cpu().Cpu_Usage_Log); i++){system->Cpu().Cpu_Usage_Log[i]=0;}
+    for (float usage_v : system->Cpu().Cpu_Usage_Log) usage_v = 0;
     // Memory 
     float Memory_Utilization = system->MemoryUtilization();   
     float Memory_Shared = system->MemoryShared();
@@ -322,10 +322,8 @@ int main(int, char**)
             if (uptime_1 > refresh_interval)
             {   
                 system->Processes();
-                vectorsize = system->processes_.size();
-                for (int i = vectorsize-1; i >= 0; i--){
-                    system->processes_[i].Update();
-                }
+    
+                for (auto & indx_process : system->processes_)indx_process.Update();
                 uptime_1=0;
             }
             uptime_1++;
