@@ -351,7 +351,10 @@ int main(int, char**)
                     ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system->processes_[i].Read_Command().c_str());
                     ImGui::NextColumn();
                 }
-                else
+            }    
+            for (int i = vectorsize-1; i >= 0; i--)
+            {
+                if (system->processes_[i].Read_Cpu() < 0.01)
                 {
                     ImGui::Text("%d", system->processes_[i].Read_Pid());
                     ImGui::NextColumn();
