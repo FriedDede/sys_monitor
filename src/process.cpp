@@ -15,6 +15,7 @@ using std::string;
 using std::to_string;
 using std::vector;
 
+// Return a string vector for /proc/filename
 vector<string>  Process::procfileread(std::string filename){
        std::vector<std::string> words;
     if (Process::exist())
@@ -37,7 +38,7 @@ vector<string>  Process::procfileread(std::string filename){
         return words;
     }
 }
-
+// Return process name
 string          Process::Name() {
     if (Process::exist())
     {
@@ -46,7 +47,7 @@ string          Process::Name() {
     }
     else{return "Not Found";} 
 }
-
+// Return process status
 string          Process::Status(){
     if (Process::exist())
     {
@@ -59,7 +60,7 @@ string          Process::Status(){
         return "Not Found";
     }  
 }
-
+// Return ppid
 std::string     Process::Parent_Pid(){
         if (Process::exist())
     {
@@ -75,8 +76,7 @@ std::string     Process::Parent_Pid(){
 void            Process::Pid_Insec(int buff_pid){
     Process::process_ID=buff_pid;
 }
-
-// TODO: Return this process's CPU utilization
+// Return Cpu utilization, 100% = 1 core full load
 float           Process::CpuUtilization() {
     if (Process::exist())
     {
@@ -104,7 +104,6 @@ float           Process::CpuUtilization() {
         return 0;
     }
 }
-
 // Return the command that generates the process   
 string          Process::Command() {
     if (Process::exist())
@@ -118,7 +117,6 @@ string          Process::Command() {
     }
     
 }
-
 // Return this process's memory utilization
 string          Process::Ram() {
     if (Process::exist())
@@ -138,7 +136,6 @@ string          Process::Ram() {
         return "Not Found";
     }  
 }
-
 // Return the user (id) that generated this process
 string          Process::User() {
         if (Process::exist())
@@ -151,8 +148,7 @@ string          Process::User() {
         return "Not Found";
     } 
 }
-
-// TODO: Return the age of this process (in seconds)
+// Return the age of this process (in seconds)
 long int        Process::UpTime() { 
     
     if (Process::exist())
@@ -169,7 +165,7 @@ long int        Process::UpTime() {
         return 0;
     }
 }
-
+// Return 1 if process exist
 bool            Process::exist(){
     std::string str_pid = std::to_string(Process::process_ID);
     std::string path= "/proc/" + str_pid + "/status";   ;
@@ -177,7 +173,7 @@ bool            Process::exist(){
     bool file_status= (bool)proc_pid_status;
     return file_status;
 }
-
+// Update the data saved in the process instance
 void            Process::Update(){
     if (Process::exist())
     {
@@ -196,16 +192,8 @@ void            Process::Update(){
         Process::cpu_Usage = Process::CpuUtilization();
         Process::uptime = Process::UpTime();
     }
-    
-/***********
-    Process::pP_ID = Process::Parent_Pid();
-    Process::ram_Usage = Process::Ram();
-    Process::status_buffer=Process::Status();
-    Process::u_ID = Process::User();
-    Process::name = Process::Name();
-***********/
 }
-
+// Log to file
 void            Process::Log(int cycles){
 
     std::string filename = "P_"+to_string(process_ID)+"_Log";
