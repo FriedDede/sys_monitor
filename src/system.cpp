@@ -18,12 +18,12 @@
 
 #define ESC_KEY 27
 
-using std::set;
-using std::size_t;
-using std::string;
+//using std::set;
+//using std::size_t;
+//using std::string;
 
 
-std::vector<string> System::Sysfileread(std::string filename){
+std::vector<std::string> System::SysFileread(std::string filename){
     std::vector<std::string> words;
     std::string path= "/proc/" + filename;   
     std::ifstream proc_Sys (path.c_str(), std::ifstream::in);
@@ -36,17 +36,17 @@ std::vector<string> System::Sysfileread(std::string filename){
 }
 
 std::string System::OperatingSystem() { 
-    std::vector<std::string> words = System::Sysfileread("sys/kernel/version");
+    std::vector<std::string> words = System::SysFileread("sys/kernel/version");
     return words[0]; 
 }
 
 std::string System::Hostname() { 
-    std::vector<std::string> words = System::Sysfileread("sys/kernel/hostname");
+    std::vector<std::string> words = System::SysFileread("sys/kernel/hostname");
     return words[0]; 
 }
 
 std::string System::Kernel() {
-    std::vector<std::string> words = System::Sysfileread("version");
+    std::vector<std::string> words = System::SysFileread("version");
     return words[2]; 
 }
 
@@ -67,23 +67,23 @@ std::vector<Process>& System::Processes() {
     struct dirent *dirp;
 
     processes_.resize(process_number_at_runtime);
-    std::string dir = string("/proc");
-    std::vector<string> files;
+    std::string dir = std::string("/proc");
+    std::vector<std::string> path_list;
     DIR *dp;
     dp  = opendir(dir.c_str());
 
     while ((dirp = readdir(dp)) != NULL){
-        files.push_back(string(dirp->d_name));
+        path_list.push_back(std::string(dirp->d_name));
     }
 
-    for (auto path : files){
+    for (auto path : path_list){
         if (atoi(path.c_str())>0)
         {
             int pid = atoi(path.c_str());
             //temp_process.Update();
             if(processes_[process_position].Read_Pid() != pid && process_position<process_number_at_runtime) {
                 Process temp_process;
-                temp_process.Pid_Insec(pid);            
+                temp_process.PidInsec(pid);            
                 processes_[process_position]=temp_process;
             }
             process_position++;
@@ -133,4 +133,9 @@ long int System::UpTime() {
     struct sysinfo info;
     sysinfo(&info);
     return info.uptime; 
+}
+
+System::System(){
+    Processor cpu;
+    System::cpu_ = cpu;
 }

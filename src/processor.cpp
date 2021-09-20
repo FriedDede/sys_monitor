@@ -8,7 +8,8 @@
 
 std::vector<size_t> get_cpu_times() {
     std::ifstream proc_stat("/proc/stat");
-    proc_stat.ignore(5, ' '); // Skip the 'cpu' prefix.
+    // Skip the 'cpu' prefix.
+    proc_stat.ignore(5, ' ');
     std::vector<size_t> times;
     for (size_t time; proc_stat >> time; times.push_back(time));
     return times;
@@ -59,6 +60,7 @@ int Processor::CoreCount() {
 float Processor::Cpumean1m() { 
     struct sysinfo info;
     sysinfo(&info);
+
     //output format must be 0.usage;
     //info.load range is 0 to 1000;
     float avgload=info.loads[0]/100000.0;
@@ -67,8 +69,15 @@ float Processor::Cpumean1m() {
 float Processor::Cpumean5m() { 
     struct sysinfo info;
     sysinfo(&info);
+
     //output format must be 0.usage;
     //info.load range is 0 to 1000;
     float avgload=info.loads[1]/100000.0;
     return avgload;
+}
+
+Processor::Processor(void){
+    for (auto usage : Cpu_Usage_Log){
+        usage = 0;
+    }
 }

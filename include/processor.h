@@ -4,12 +4,12 @@
 class Processor {
     
  public:
-
-  float     Utilization();  
-  int       CoreCount();
-  float     Cpumean1m();
-  float     Cpumean5m();
-  float     Cpu_Usage_Log[30];
+    Processor();
+    float     Utilization();  
+    int       CoreCount();
+    float     Cpumean1m();
+    float     Cpumean5m();
+    float     Cpu_Usage_Log[30];
   
  private:
     int     Cpu_Count;

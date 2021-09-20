@@ -9,7 +9,8 @@
 
 class System {
  public:
-  std::vector<std::string> Sysfileread(std::string);
+ System();
+  std::vector<std::string> SysFileread(std::string);
   Processor&  Cpu();                   
   int         TotalProcesses(); 
   std::vector<Process>& Processes();  
