@@ -3,6 +3,6 @@
 
 void Logger::Proc(int pid, int cycles){
     Process tolog;
-    tolog.Pid_Insec(pid);
+    tolog.PidInsec(pid);
     tolog.Log(cycles);
 }

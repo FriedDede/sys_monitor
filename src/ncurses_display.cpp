@@ -20,7 +20,7 @@ void NCursesDisplay::Process_Logger(int process_id,std::string path,int cyclenum
     int i=0;
 
     Process process;
-    process.Pid_Insec(process_id);
+    process.PidInsec(process_id);
     std::ofstream Log_file (path.c_str(), std::ofstream::out);
     Log_file << "SyS Monitor Log File";
     Log_file << "\n PID \t CPU \t MEM \t TIME";
@@ -120,7 +120,7 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,WINDOW* wi
       {
       mvwprintw(window, ++row, pid_column, to_string(processes[i].Pid()).c_str());
       
-      mvwprintw(window, row, Ppid_column, processes[i].Parent_Pid().c_str());
+      mvwprintw(window, row, Ppid_column, processes[i].ParentPid().c_str());
       
       mvwprintw(window, row, user_column, processes[i].User().c_str());
       float cpu = processes[i].CpuUtilization() * 100;

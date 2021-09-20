@@ -9,7 +9,7 @@ class Process {
  public:
   void        Update();
   std::vector<std::string> procfileread(std::string);  
-  void        Pid_Insec(int);
+  void        PidInsec(int);
   std::string Read_Name();
   std::string Read_Parent();
   std::string Read_User();
@@ -33,7 +33,7 @@ class Process {
   long int    uptime = 0;
 
   float       CpuUtilization();         
-  std::string Parent_Pid();
+  std::string ParentPid();
   long int    UpTime();                       
   bool        exist();
   std::string Name();

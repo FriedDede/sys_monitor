@@ -61,7 +61,7 @@ string          Process::Status(){
     }  
 }
 // Return ppid
-std::string     Process::Parent_Pid(){
+std::string     Process::ParentPid(){
         if (Process::exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
@@ -73,7 +73,7 @@ std::string     Process::Parent_Pid(){
     } 
 }    
 
-void            Process::Pid_Insec(int buff_pid){
+void            Process::PidInsec(int buff_pid){
     Process::process_ID=buff_pid;
 }
 // Return Cpu utilization, 100% = 1 core full load

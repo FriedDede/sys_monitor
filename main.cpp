@@ -143,7 +143,7 @@ int main(int, char**)
     float Memory_Shared = system->MemoryShared();
     float Memory_Swap = system->MemorySwap();
     float Memory_Buffer = system->MemoryBuffer();
-    //Updater FlagsS
+    //Updater Flags
     long uptime_1= 0;
     long uptime_2= 0;
     long uptime_3= 0;
