@@ -32,10 +32,11 @@ float Processor::Utilization() {
     Processor::CPU_Previous_Idle = idle_time;
     Processor::CPU_Previous_Total = total_time;
 
-    for (int j = 0; j < 29; j++){Processor::Cpu_Usage_Log[j]=Processor::Cpu_Usage_Log[j+1];}
-        Processor::Cpu_Usage_Log[29]=utilization*100;
+    for (int j = 0; j < 29; j++){
+        Processor::Cpu_Usage_Log[j]=Processor::Cpu_Usage_Log[j+1];
+    }
+    Processor::Cpu_Usage_Log[29]=utilization*100;
     return utilization;
-    
 }
 
 int Processor::CoreCount() {
@@ -48,7 +49,7 @@ int Processor::CoreCount() {
         words.push_back(str);
     }
     proc_Sys.close();
-    for (int i = 0; i < words.size(); i++){
+    for (size_t i = 0; i < words.size(); i++){
         if (words[i]== "siblings"){
             Cpucount=words[i+2];
         }
@@ -77,7 +78,7 @@ float Processor::Cpumean5m() {
 }
 
 Processor::Processor(void){
-    for (auto usage : Cpu_Usage_Log){
+    for (auto &usage : Cpu_Usage_Log){
         usage = 0;
     }
 }

@@ -7,9 +7,11 @@
 class Process {
 
  public:
+ 
   void        Update();
-  std::vector<std::string> procfileread(std::string);  
-  void        PidInsec(int);
+ 
+  void        SetPid(int);
+
   std::string Read_Name();
   std::string Read_Parent();
   std::string Read_User();
@@ -19,6 +21,7 @@ class Process {
   int         Read_Pid();
   float       Read_Cpu();
   long int    Read_Uptime();
+
   void        Log(int);
 
  private:
@@ -35,12 +38,14 @@ class Process {
   float       CpuUtilization();         
   std::string ParentPid();
   long int    UpTime();                       
-  bool        exist();
+  bool        Exist();
   std::string Name();
   std::string User();
   std::string Command();
   std::string Ram();
   std::string Status();
+
+  std::vector<std::string> procfileread(std::string); 
 
   float       prev_u_time=0;
   float       prev_s_time=0;

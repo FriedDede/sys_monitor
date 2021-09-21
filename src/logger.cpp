@@ -2,7 +2,7 @@
 #include "logger.h"
 
 void Logger::Proc(int pid, int cycles){
-    Process tolog;
-    tolog.PidInsec(pid);
-    tolog.Log(cycles);
+    Process process;
+    process.SetPid(pid);
+    process.Log(cycles);
 }

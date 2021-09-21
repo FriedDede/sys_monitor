@@ -18,7 +18,7 @@ using std::vector;
 // Return a string vector for /proc/filename
 vector<string>  Process::procfileread(std::string filename){
        std::vector<std::string> words;
-    if (Process::exist())
+    if (Process::Exist())
     {
         std::string str_pid = std::to_string(Process::process_ID);
         std::string path= "/proc/" + str_pid + "/" + filename;   
@@ -40,7 +40,7 @@ vector<string>  Process::procfileread(std::string filename){
 }
 // Return process name
 string          Process::Name() {
-    if (Process::exist())
+    if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
         return words[1];
@@ -49,7 +49,7 @@ string          Process::Name() {
 }
 // Return process status
 string          Process::Status(){
-    if (Process::exist())
+    if (Process::Exist())
     {
         Process::status_buffer.clear();
         std::vector<std::string> words = Process::procfileread("status");
@@ -62,7 +62,7 @@ string          Process::Status(){
 }
 // Return ppid
 std::string     Process::ParentPid(){
-        if (Process::exist())
+        if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
         return words[14];
@@ -73,12 +73,12 @@ std::string     Process::ParentPid(){
     } 
 }    
 
-void            Process::PidInsec(int buff_pid){
+void            Process::SetPid(int buff_pid){
     Process::process_ID=buff_pid;
 }
 // Return Cpu utilization, 100% = 1 core full load
 float           Process::CpuUtilization() {
-    if (Process::exist())
+    if (Process::Exist())
     {
     float s_time, delta_s_time;
     float u_time, delta_u_time;
@@ -106,7 +106,7 @@ float           Process::CpuUtilization() {
 }
 // Return the command that generates the process   
 string          Process::Command() {
-    if (Process::exist())
+    if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("comm");
         return words[0];
@@ -119,26 +119,25 @@ string          Process::Command() {
 }
 // Return this process's memory utilization
 string          Process::Ram() {
-    if (Process::exist())
+    if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
         
-        for (int i = 0; i < words.size(); i++)
+        for (size_t i = 0; i < words.size(); i++)
         {
             if (words[i]== "VmSize:")
             {
                 return words[++i];
             }
+            
         }
     }
-    else
-    {
-        return "Not Found";
-    }  
+    return "Not Found";
+
 }
 // Return the user (id) that generated this process
 string          Process::User() {
-        if (Process::exist())
+        if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
         return words[19];
@@ -151,7 +150,7 @@ string          Process::User() {
 // Return the age of this process (in seconds)
 long int        Process::UpTime() { 
     
-    if (Process::exist())
+    if (Process::Exist())
     {
     long int time = 0;
     vector<string>stat=procfileread("stat");
@@ -166,7 +165,7 @@ long int        Process::UpTime() {
     }
 }
 // Return 1 if process exist
-bool            Process::exist(){
+bool            Process::Exist(){
     std::string str_pid = std::to_string(Process::process_ID);
     std::string path= "/proc/" + str_pid + "/status";   ;
     std::ifstream proc_pid_status (path.c_str(), std::ifstream::in);
@@ -175,7 +174,7 @@ bool            Process::exist(){
 }
 // Update the data saved in the process instance
 void            Process::Update(){
-    if (Process::exist())
+    if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
         Process::name = words[1];
@@ -183,7 +182,7 @@ void            Process::Update(){
         Process::pP_ID = words[14];
         Process::u_ID = words[19];
 
-        for (int i = 0; i < words.size(); i++)
+        for (size_t i = 0; i < words.size(); i++)
         {
             if (words[i]== "VmSize:") Process::ram_Usage = words[++i];
 
@@ -216,7 +215,7 @@ void            Process::Log(int cycles){
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         i++;
     }
-  std::terminate;
+  std::terminate();
 }
 
 std::string Process::Read_Name(){

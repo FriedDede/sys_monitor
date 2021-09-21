@@ -83,7 +83,7 @@ std::vector<Process>& System::Processes() {
             //temp_process.Update();
             if(processes_[process_position].Read_Pid() != pid && process_position<process_number_at_runtime) {
                 Process temp_process;
-                temp_process.PidInsec(pid);            
+                temp_process.SetPid(pid);            
                 processes_[process_position]=temp_process;
             }
             process_position++;
@@ -101,16 +101,19 @@ float System::MemoryUtilization() {
     sysinfo(&info);
     return ((float)info.totalram-(float)info.freeram)/(float)info.totalram;
 }
+
 float System::MemoryBuffer() { 
     struct sysinfo info;
     sysinfo(&info);
     return (float)info.bufferram/(float)info.totalram;
 }
+
 float System::MemoryShared() { 
     struct sysinfo info;
     sysinfo(&info);
     return (float)info.sharedram/(float)info.totalram;
 }
+
 float System::MemorySwap() { 
     struct sysinfo info;
     sysinfo(&info);

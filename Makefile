@@ -11,15 +11,16 @@
 #   pacman -S mingw-w64-i686-SDL
 #
 
-#CXX = g++
+CXX = g++
+CC = gcc
 #CXX = clang++
 
-EXE = Sys_Monitor_opengl3
+EXE = build/Sys_Monitor_opengl3
 SOURCES = main.cpp
 SOURCES += imgui/opengl3/imgui_impl_sdl.cpp imgui/opengl3/imgui_impl_opengl3.cpp
 SOURCES += imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_widgets.cpp
 SOURCES += src/format.cpp src/process.cpp src/system.cpp src/processor.cpp src/logger.cpp
-OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
+OBJS = $(addprefix build/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
 UNAME_S := $(shell uname -s)
 
 CXXFLAGS = -Iimgui/ -Iimgui/opengl3/ -Isrc/ -Iinclude/ 
@@ -83,21 +84,21 @@ endif
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-%.o:src/%.cpp
+build/%.o:src/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
-%.o:%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-%.o:imgui/%.cpp
+build/%.o:%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o:imgui/opengl3/%.cpp
+build/%.o:imgui/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o:imgui/libs/gl3w/GL/%.c
+build/%.o:imgui/opengl3/%.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+build/%.o:imgui/libs/gl3w/GL/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-%.o:imgui/libs/glad/src/%.c
+build/%.o:imgui/libs/glad/src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 all: $(EXE)
