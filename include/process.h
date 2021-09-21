@@ -26,12 +26,12 @@ class Process {
 
  private:
   std::string name;
-  int         process_ID = 0;
-  std::string pP_ID;
-  std::string u_ID;
-  float       cpu_Usage = 0;
-  std::string ram_Usage;
-  std::string status_buffer;
+  int         pid = 0;
+  std::string ppid;
+  std::string uid;
+  float       cpu = 0.0f;
+  std::string ram;
+  std::string status;
   std::string command;
   long int    uptime = 0;
 

@@ -20,7 +20,7 @@ vector<string>  Process::procfileread(std::string filename){
        std::vector<std::string> words;
     if (Process::Exist())
     {
-        std::string str_pid = std::to_string(Process::process_ID);
+        std::string str_pid = std::to_string(Process::pid);
         std::string path= "/proc/" + str_pid + "/" + filename;   
         std::ifstream proc_pid_status (path.c_str(), std::ifstream::in);
         std::string str;
@@ -51,7 +51,7 @@ string          Process::Name() {
 string          Process::Status(){
     if (Process::Exist())
     {
-        Process::status_buffer.clear();
+        Process::status.clear();
         std::vector<std::string> words = Process::procfileread("status");
                 return words[5]+words[6];
     }
@@ -74,7 +74,7 @@ std::string     Process::ParentPid(){
 }    
 
 void            Process::SetPid(int buff_pid){
-    Process::process_ID=buff_pid;
+    Process::pid=buff_pid;
 }
 // Return Cpu utilization, 100% = 1 core full load
 float           Process::CpuUtilization() {
@@ -166,7 +166,7 @@ long int        Process::UpTime() {
 }
 // Return 1 if process exist
 bool            Process::Exist(){
-    std::string str_pid = std::to_string(Process::process_ID);
+    std::string str_pid = std::to_string(Process::pid);
     std::string path= "/proc/" + str_pid + "/status";   ;
     std::ifstream proc_pid_status (path.c_str(), std::ifstream::in);
     bool file_status= (bool)proc_pid_status;
@@ -178,24 +178,24 @@ void            Process::Update(){
     {
         std::vector<std::string> words = Process::procfileread("status");
         Process::name = words[1];
-        Process::status_buffer = words[5]+words[6];
-        Process::pP_ID = words[14];
-        Process::u_ID = words[19];
+        Process::status = words[5]+words[6];
+        Process::ppid = words[14];
+        Process::uid = words[19];
 
         for (size_t i = 0; i < words.size(); i++)
         {
-            if (words[i]== "VmSize:") Process::ram_Usage = words[++i];
+            if (words[i]== "VmSize:") Process::ram = words[++i];
 
         }
         Process::command = Process::Command();
-        Process::cpu_Usage = Process::CpuUtilization();
+        Process::cpu = Process::CpuUtilization();
         Process::uptime = Process::UpTime();
     }
 }
 // Log to file
 void            Process::Log(int cycles){
 
-    std::string filename = "P_"+to_string(process_ID)+"_Log";
+    std::string filename = "P_"+to_string(pid)+"_Log";
     std::ofstream Log_file (filename.c_str(), std::ofstream::out);
     int i=0;
     Log_file << "SyS Monitor Log File";
@@ -204,7 +204,7 @@ void            Process::Log(int cycles){
     while(i<cycles){
         Process::Update();
         Log_file << "\n ";
-        Log_file << std::to_string(process_ID).c_str();
+        Log_file << std::to_string(pid).c_str();
         Log_file << "\t     ";
         Log_file << std::to_string(Process::Read_Cpu()*100).c_str();
         Log_file << "\t     ";
@@ -222,25 +222,25 @@ std::string Process::Read_Name(){
     return name;
 }
 std::string Process::Read_Parent(){
-    return Process::pP_ID;
+    return Process::ppid;
 }
 std::string Process::Read_User(){
-    return Process::u_ID;
+    return Process::uid;
 }
 std::string Process::Read_Command(){
     return Process::command;
 }
 std::string Process::Read_Ram(){
-    return Process::ram_Usage;
+    return Process::ram;
 }
 std::string Process::Read_Status(){
-    return Process::status_buffer;
+    return Process::status;
 }
 int         Process::Read_Pid(){
-    return Process::process_ID;
+    return Process::pid;
 }
 float       Process::Read_Cpu(){
-    return Process::cpu_Usage;
+    return Process::cpu;
 }
 long int    Process::Read_Uptime(){
     return Process::uptime;
