@@ -5,7 +5,7 @@ class Processor {
     
  public:
     Processor();
-    float     Utilization();  
+    float     Utilization();
     int       CoreCount();
     float     Cpumean1m();
     float     Cpumean5m();

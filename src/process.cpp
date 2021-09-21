@@ -25,10 +25,10 @@ vector<string>  Process::procfileread(std::string filename){
         std::ifstream proc_pid_status (path.c_str(), std::ifstream::in);
         std::string str;
 
-        while (proc_pid_status >> str){                  
+        while (proc_pid_status >> str){
             words.push_back(str);
         }
-        proc_pid_status.close();        
+        proc_pid_status.close();
         return words;
     }
     else
@@ -211,7 +211,7 @@ void            Process::Log(int cycles){
         Log_file << Process::Read_Ram().c_str();
         Log_file << "\t     ";
         Log_file << std::to_string(Process::Read_Uptime()).c_str();
-        Log_file << "\t";      
+        Log_file << "\t";
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         i++;
     }
