@@ -18,11 +18,6 @@
 
 #define ESC_KEY 27
 
-//using std::set;
-//using std::size_t;
-//using std::string;
-
-
 std::vector<std::string> System::SysFileread(std::string filename){
     std::vector<std::string> words;
     std::string path= "/proc/" + filename;   

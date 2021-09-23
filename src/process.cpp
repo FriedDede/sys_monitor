@@ -11,12 +11,8 @@
 #include "process.h"
 #include "system.h"
 
-using std::string;
-using std::to_string;
-using std::vector;
-
 // Return a string vector for /proc/filename
-vector<string>  Process::procfileread(std::string filename){
+std::vector<std::string>  Process::procfileread(std::string filename){
        std::vector<std::string> words;
     if (Process::Exist())
     {
@@ -39,7 +35,7 @@ vector<string>  Process::procfileread(std::string filename){
     }
 }
 // Return process name
-string          Process::Name() {
+std::string          Process::Name() {
     if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
@@ -48,7 +44,7 @@ string          Process::Name() {
     else{return "Not Found";} 
 }
 // Return process status
-string          Process::Status(){
+std::string          Process::Status(){
     if (Process::Exist())
     {
         Process::status.clear();
@@ -84,7 +80,7 @@ float           Process::CpuUtilization() {
     float u_time, delta_u_time;
     float uptime, delta_uptime;
 
-    vector<string> stat = procfileread("stat");
+    std::vector<std::string> stat = procfileread("stat");
     u_time=(float)(atoi(stat[13].c_str()))/sysconf(_SC_CLK_TCK);
     s_time=(float)(atoi(stat[14].c_str()))/sysconf(_SC_CLK_TCK);
     uptime=(float)Process::UpTime();
@@ -105,7 +101,7 @@ float           Process::CpuUtilization() {
     }
 }
 // Return the command that generates the process   
-string          Process::Command() {
+std::string          Process::Command() {
     if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("comm");
@@ -118,7 +114,7 @@ string          Process::Command() {
     
 }
 // Return this process's memory utilization
-string          Process::Ram() {
+std::string          Process::Ram() {
     if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
@@ -136,7 +132,7 @@ string          Process::Ram() {
 
 }
 // Return the user (id) that generated this process
-string          Process::User() {
+std::string          Process::User() {
         if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
@@ -153,7 +149,7 @@ long int        Process::UpTime() {
     if (Process::Exist())
     {
     long int time = 0;
-    vector<string>stat=procfileread("stat");
+    std::vector<std::string>stat=procfileread("stat");
     struct sysinfo info;
     sysinfo(&info);
     time=info.uptime-(atoi(stat[21].c_str())/sysconf(_SC_CLK_TCK));
@@ -195,7 +191,7 @@ void            Process::Update(){
 // Log to file
 void            Process::Log(int cycles){
 
-    std::string filename = "P_"+to_string(pid)+"_Log";
+    std::string filename = "P_"+std::to_string(pid)+"_Log";
     std::ofstream Log_file (filename.c_str(), std::ofstream::out);
     int i=0;
     Log_file << "SyS Monitor Log File";
