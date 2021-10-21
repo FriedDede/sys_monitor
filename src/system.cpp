@@ -46,7 +46,7 @@ std::string System::Kernel() {
 }
 
 Processor& System::Cpu() {
-    return cpu_; 
+    return System::cpu_; 
 }
 
 int System::TotalProcesses() { 

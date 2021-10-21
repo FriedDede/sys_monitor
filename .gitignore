@@ -2,7 +2,9 @@ monitor
 a.out
 settings.json
 *.o
-build/*
+build*
 *.json
 Sys_Monitor_opengl3
 OpenGL3.code-workspace
+.idea
+.vscode
