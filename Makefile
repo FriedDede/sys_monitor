@@ -15,12 +15,14 @@ CXX = g++
 CC = gcc
 #CXX = clang++
 
-EXE = build/Sys_Monitor_opengl3
+BUILD_TARGET = Sys_Mon
+BUILD_DIR = build
+EXE = $(addprefix $(BUILD_DIR)/, $(basename $(notdir $(BUILD_TARGET))))
 SOURCES = main.cpp
 SOURCES += imgui/opengl3/imgui_impl_sdl.cpp imgui/opengl3/imgui_impl_opengl3.cpp
 SOURCES += imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_widgets.cpp
 SOURCES += src/format.cpp src/process.cpp src/system.cpp src/processor.cpp src/logger.cpp
-OBJS = $(addprefix build/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
+OBJS = $(addprefix $(BUILD_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
 UNAME_S := $(shell uname -s)
 
 CXXFLAGS = -Iimgui/ -Iimgui/opengl3/ -Isrc/ -Iinclude/ 
@@ -84,21 +86,17 @@ endif
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-build/%.o:src/%.cpp
+$(BUILD_DIR)/%.o:src/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
-build/%.o:%.cpp
+$(BUILD_DIR)/%.o:%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-build/%.o:imgui/%.cpp
+$(BUILD_DIR)/%.o:imgui/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-build/%.o:imgui/opengl3/%.cpp
+$(BUILD_DIR)/%.o:imgui/opengl3/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-build/%.o:imgui/libs/gl3w/GL/%.c
+$(BUILD_DIR)/%.o:imgui/libs/gl3w/GL/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-
-build/%.o:imgui/libs/glad/src/%.c
+$(BUILD_DIR)/%.o:imgui/libs/glad/src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 all: $(EXE)
@@ -109,3 +107,7 @@ $(EXE): $(OBJS)
 
 clean:
 	rm -f $(EXE) $(OBJS)
+	rm -r $(BUILD_DIR)
+
+setup:
+	mkdir $(BUILD_DIR)
