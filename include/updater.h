@@ -1,7 +1,8 @@
-#pragma once 
+#pragma once
 #define UPDATER_H
 #include "system.h"
 
-namespace Updater{
-    void ProcessesUpdater(System*);    
+namespace Updater
+{
+    void ProcessesUpdater(System *);
 }
