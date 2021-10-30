@@ -49,13 +49,13 @@ Processor& System::Cpu() {
     return System::cpu_; 
 }
 
-int System::TotalProcesses() { 
+unsigned short System::TotalProcesses() { 
     struct sysinfo info;
     sysinfo(&info);
     return info.procs; 
 }
 
-std::vector<Process>& System::Processes() {
+void System::Processes() {
 
     int process_position=0;
     int process_number_at_runtime = System::TotalProcesses();
@@ -78,17 +78,18 @@ std::vector<Process>& System::Processes() {
             //temp_process.Update();
             if(processes_[process_position].Read_Pid() != pid && process_position<process_number_at_runtime) {
                 Process temp_process;
-                temp_process.SetPid(pid);            
+                temp_process.SetPid(pid);
+                temp_process.Update();
                 processes_[process_position]=temp_process;
             }
             process_position++;
         } 
     }
-
-    processes_.resize(process_position);
+    if (process_position != process_number_at_runtime)
+    {
+       processes_.resize(process_position);
+    }
     closedir(dp);
-
-    return processes_;
 }
 
 float System::MemoryUtilization() { 

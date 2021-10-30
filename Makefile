@@ -21,7 +21,7 @@ EXE = $(addprefix $(BUILD_DIR)/, $(basename $(notdir $(BUILD_TARGET))))
 SOURCES = main.cpp
 SOURCES += imgui/opengl3/imgui_impl_sdl.cpp imgui/opengl3/imgui_impl_opengl3.cpp
 SOURCES += imgui/imgui.cpp imgui/imgui_demo.cpp imgui/imgui_draw.cpp imgui/imgui_widgets.cpp
-SOURCES += src/format.cpp src/process.cpp src/system.cpp src/processor.cpp src/logger.cpp
+SOURCES += src/format.cpp src/process.cpp src/system.cpp src/processor.cpp src/logger.cpp src/updater.cpp
 OBJS = $(addprefix $(BUILD_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
 UNAME_S := $(shell uname -s)
 

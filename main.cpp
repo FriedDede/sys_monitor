@@ -8,6 +8,7 @@
 #include "include/processor.h"
 #include "include/system.h"
 #include "include/logger.h"
+#include "include/updater.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -126,28 +127,14 @@ int main(int, char**)
 
     //System
     //System class only return this values it does not save those in a class instance
-    System *system = new System;
-    std::string OS = system->OperatingSystem();
-    std::string Kernel = system->Kernel();
-    int Cores = system->Cpu().CoreCount();
-    std::string Hostname = system->Hostname();
-    int total_processes=system->TotalProcesses();
-    // Cpu window 
-    float Cpu1m= system->Cpu().Cpumean1m();
-    float Cpu5m= system->Cpu().Cpumean5m();
-    float Cpu_Usage= system->Cpu().Utilization();
+    System system;
+    std::string OS = system.OperatingSystem();
+    std::string Kernel = system.Kernel();
+    int Cores = system.cpu_.CoreCount();
+    std::string Hostname = system.Hostname();
+    // Cpu window
     char overlay[32];
-    for (float usage_v : system->Cpu().Cpu_Usage_Log) usage_v = 0;
-    // Memory 
-    float Memory_Utilization = system->MemoryUtilization();   
-    float Memory_Shared = system->MemoryShared();
-    float Memory_Swap = system->MemorySwap();
-    float Memory_Buffer = system->MemoryBuffer();
-    //Updater Flags
-    long uptime_1= 0;
-    long uptime_2= 0;
-    long uptime_3= 0;
-    long uptime_4= 0;
+    for (auto &usage : system.cpu_.Cpu_Usage_Log) usage = 0;
     //Logger 
     int ID=0;
     int round=9;
@@ -155,6 +142,10 @@ int main(int, char**)
     bool background_logging =false;
     long log_start_time = 0;
     int background_round=0;
+
+    //Background polling thread
+    std::thread Updater(Updater::ProcessesUpdater, &system);
+    Updater.detach();
 
     // Main loop
     bool done = false;
@@ -200,7 +191,7 @@ int main(int, char**)
         if (background_logging)
         {
             ImGui::Text("Logging pid %d", ID);
-            if ((system->UpTime()-log_start_time)>= background_round)
+            if ((system.UpTime()-log_start_time)>= background_round)
             {
                 background_logging=false;
             }
@@ -229,75 +220,48 @@ int main(int, char**)
             ImGui::NextColumn();
             ImGui::Text("Processes:");
             ImGui::NextColumn();
-            ImGui::Text("%d",total_processes);
+            ImGui::Text("%d",system.total_processes);
             ImGui::NextColumn();
             ImGui::Text("Uptime:");
             ImGui::NextColumn();
-            ImGui::Text(Format::ElapsedTime(system->UpTime()).c_str());
+            ImGui::Text(Format::ElapsedTime(system.UpTime()).c_str());
             ImGui::NextColumn();
             ImGui::Text("Cores:");
             ImGui::NextColumn();
             ImGui::Text("%d",Cores);
             ImGui::End();
-            if (uptime_2 > refresh_interval)
-            {
-                total_processes=system->TotalProcesses();
-                uptime_2=0;
-            }
-            uptime_2++;            
         }
         if (show_cpu_window){
             ImGui::Begin("CPU stat", &show_cpu_window);   
-            ImGui::Text("CPU Util: %d [%]", (int)(Cpu_Usage*100));
+            ImGui::Text("CPU Util: %d [%]", (int)(system.cpu_usage*100));
             //Need to understand how the color push work
             //ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.0,1.0,0.0,1.0));
-            ImGui::ProgressBar(Cpu_Usage, ImVec2(-1,0), "");
-            ImGui::Text("CPU Average 1 minute: %d [%]", (int)(Cpu1m/(float)Cores)*100);
-            ImGui::ProgressBar(Cpu1m/(float)Cores, ImVec2(-1,0), "");
-            ImGui::Text("CPU Average 5 minute: %d [%]", (int)(Cpu5m/(float)Cores)*100);
-            ImGui::ProgressBar(Cpu5m/(float)Cores, ImVec2(-1,0), "");
-            sprintf(overlay, "CPU Util (45s): \n\nAVG: %d [%]", (int)(Cpu1m/(float)Cores*100));
+            ImGui::ProgressBar(system.cpu_usage, ImVec2(-1,0), "");
+            ImGui::Text("CPU Average 1 minute: %d [%]", (int)(system.cpu1m/(float)Cores)*100);
+            ImGui::ProgressBar(system.cpu1m/(float)Cores, ImVec2(-1,0), "");
+            ImGui::Text("CPU Average 5 minute: %d [%]", (int)(system.cpu5m/(float)Cores)*100);
+            ImGui::ProgressBar(system.cpu5m/(float)Cores, ImVec2(-1,0), "");
+            sprintf(overlay, "CPU Util (45s): \n\nAVG: %d [%]", (int)(system.cpu1m/(float)Cores*100));
             ImGui::Text(overlay);
             ImGui::SameLine();
-            ImGui::PlotLines("", system->Cpu().Cpu_Usage_Log, IM_ARRAYSIZE(system->Cpu().Cpu_Usage_Log), 0, "", 0, 100, ImVec2(0,80));
-            if (uptime_3 > refresh_interval)
-            {
-                Cpu1m= system->Cpu().Cpumean1m();
-                Cpu5m= system->Cpu().Cpumean5m();
-                Cpu_Usage= system->Cpu().Utilization();                
-                uptime_3=0;
-            }
-            uptime_3++;
-            
+            ImGui::PlotLines("", system.cpu_.Cpu_Usage_Log, IM_ARRAYSIZE(system.cpu_.Cpu_Usage_Log), 0, "", 0, 100, ImVec2(0,80));
             ImGui::End();
         }
         if (show_mem_window){
             ImGui::Begin("Memory stat", &show_mem_window);   
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Util: %d [%]", (int)(Memory_Utilization*100));
-            ImGui::ProgressBar(Memory_Utilization, ImVec2(-1,0), "");
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Shared: %d [%]", (int)(Memory_Shared*100));
-            ImGui::ProgressBar(Memory_Shared, ImVec2(-1,0), "");
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Buffer: %d [%]", (int)(Memory_Buffer*100));
-            ImGui::ProgressBar(Memory_Buffer, ImVec2(-1,0), "");
-            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Swap: %d [%]", (int)(Memory_Swap*100));
-            ImGui::ProgressBar(Memory_Swap, ImVec2(-1,0), "");
-
-            if (uptime_4 > refresh_interval)
-            {
-                Memory_Utilization = system->MemoryUtilization();   
-                Memory_Shared = system->MemoryShared();
-                Memory_Swap = system->MemorySwap();
-                Memory_Buffer = system->MemoryBuffer();                               
-                uptime_4=0;
-            }
-            uptime_4++;
-            
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Util: %d [%]", (int)(system.memory_Utilization*100));
+            ImGui::ProgressBar(system.memory_Utilization, ImVec2(-1,0), "");
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Shared: %d [%]", (int)(system.memory_Shared*100));
+            ImGui::ProgressBar(system.memory_Shared, ImVec2(-1,0), "");
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Buffer: %d [%]", (int)(system.memory_Buffer*100));
+            ImGui::ProgressBar(system.memory_Buffer, ImVec2(-1,0), "");
+            ImGui::TextColored(ImVec4(1,1,1,1),"Memory Swap: %d [%]", (int)(system.memory_Swap*100));
+            ImGui::ProgressBar(system.memory_Swap, ImVec2(-1,0), "");
             ImGui::End();
         }
         if (show_proc_window){
-            ImGui::Begin("Processes", &show_proc_window);   
-            //processes= system->Processes();
-            int vectorsize = system->processes_.size();
+            ImGui::Begin("Processes", &show_proc_window);
+            int vectorsize = system.processes_.size();
             ImGui::Columns(9,"CPU",true);
             
             ImGui::Text("PID");
@@ -318,61 +282,51 @@ int main(int, char**)
             ImGui::NextColumn();
             ImGui::Text("COMMAND");
             ImGui::NextColumn();
-
-            if (uptime_1 > refresh_interval)
-            {   
-                system->Processes();
-    
-                for (auto & indx_process : system->processes_)indx_process.Update();
-                uptime_1=0;
-            }
-            uptime_1++;
-            
             for (int i = vectorsize-1; i >= 0; i--)
             {
-                if (system->processes_[i].Read_Cpu() > 0.01)
+                if (system.processes_[i].Read_Cpu() > 0.01)
                 {
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%d", system->processes_[i].Read_Pid());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%d", system.processes_[i].Read_Pid());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system->processes_[i].Read_Parent().c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system.processes_[i].Read_Parent().c_str());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system->processes_[i].Read_Name().c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system.processes_[i].Read_Name().c_str());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system->processes_[i].Read_User().c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system.processes_[i].Read_User().c_str());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%d", (int)(system->processes_[i].Read_Cpu()*100));
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%d", (int)(system.processes_[i].Read_Cpu()*100));
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system->processes_[i].Read_Ram().c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system.processes_[i].Read_Ram().c_str());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", Format::ElapsedTime(system->processes_[i].Read_Uptime()).c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", Format::ElapsedTime(system.processes_[i].Read_Uptime()).c_str());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system->processes_[i].Read_Status().c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system.processes_[i].Read_Status().c_str());
                     ImGui::NextColumn();
-                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system->processes_[i].Read_Command().c_str());
+                    ImGui::TextColored(ImVec4(0.0,1.0,0.0,1.0),"%s", system.processes_[i].Read_Command().c_str());
                     ImGui::NextColumn();
                 }
             }    
             for (int i = vectorsize-1; i >= 0; i--)
             {
-                if (system->processes_[i].Read_Cpu() < 0.01)
+                if (system.processes_[i].Read_Cpu() < 0.01)
                 {
-                    ImGui::Text("%d", system->processes_[i].Read_Pid());
+                    ImGui::Text("%d", system.processes_[i].Read_Pid());
                     ImGui::NextColumn();
-                    ImGui::Text("%s", system->processes_[i].Read_Parent().c_str());
+                    ImGui::Text("%s", system.processes_[i].Read_Parent().c_str());
                     ImGui::NextColumn();
-                    ImGui::Text("%s", system->processes_[i].Read_Name().c_str());
+                    ImGui::Text("%s", system.processes_[i].Read_Name().c_str());
                     ImGui::NextColumn();
-                    ImGui::Text("%s", system->processes_[i].Read_User().c_str());
+                    ImGui::Text("%s", system.processes_[i].Read_User().c_str());
                     ImGui::NextColumn();
-                    ImGui::Text("%d", (int)(system->processes_[i].Read_Cpu()*100));
+                    ImGui::Text("%d", (int)(system.processes_[i].Read_Cpu()*100));
                     ImGui::NextColumn();
-                    ImGui::Text("%s", system->processes_[i].Read_Ram().c_str());
+                    ImGui::Text("%s", system.processes_[i].Read_Ram().c_str());
                     ImGui::NextColumn();
-                    ImGui::Text("%s", Format::ElapsedTime(system->processes_[i].Read_Uptime()).c_str());
+                    ImGui::Text("%s", Format::ElapsedTime(system.processes_[i].Read_Uptime()).c_str());
                     ImGui::NextColumn();
-                    ImGui::Text("%s", system->processes_[i].Read_Status().c_str());
+                    ImGui::Text("%s", system.processes_[i].Read_Status().c_str());
                     ImGui::NextColumn();
-                    ImGui::Text("%s", system->processes_[i].Read_Command().c_str());
+                    ImGui::Text("%s", system.processes_[i].Read_Command().c_str());
                     ImGui::NextColumn();                
                 }
             }
@@ -388,13 +342,12 @@ int main(int, char**)
             {
                 std::thread Logger(Logger::Proc,ID,round);
                 Logger.detach();
-                log_start_time=system->UpTime();
+                log_start_time=system.UpTime();
                 logging = false;
                 show_log_window=false;
                 background_logging=true;
                 background_round=round;
             }
-            //ImGui::ShowDemoWindow(&show_log_window);
             ImGui::End();
         }
         // Rendering
@@ -405,7 +358,6 @@ int main(int, char**)
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         SDL_GL_SwapWindow(window);
-        
     }
 
     // Cleanup
