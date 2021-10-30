@@ -12,16 +12,18 @@
 #include "system.h"
 
 // Return a string vector for /proc/filename
-std::vector<std::string>  Process::procfileread(std::string filename){
-       std::vector<std::string> words;
+std::vector<std::string> Process::procfileread(std::string filename)
+{
+    std::vector<std::string> words;
     if (Process::Exist())
     {
         std::string str_pid = std::to_string(Process::pid);
-        std::string path= "/proc/" + str_pid + "/" + filename;   
-        std::ifstream proc_pid_status (path.c_str(), std::ifstream::in);
+        std::string path = "/proc/" + str_pid + "/" + filename;
+        std::ifstream proc_pid_status(path.c_str(), std::ifstream::in);
         std::string str;
 
-        while (proc_pid_status >> str){
+        while (proc_pid_status >> str)
+        {
             words.push_back(str);
         }
         proc_pid_status.close();
@@ -35,30 +37,36 @@ std::vector<std::string>  Process::procfileread(std::string filename){
     }
 }
 // Return process name
-std::string          Process::Name() {
+std::string Process::Name()
+{
     if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
         return words[1];
     }
-    else{return "Not Found";} 
+    else
+    {
+        return "Not Found";
+    }
 }
 // Return process status
-std::string          Process::Status(){
+std::string Process::Status()
+{
     if (Process::Exist())
     {
         Process::status.clear();
         std::vector<std::string> words = Process::procfileread("status");
-                return words[5]+words[6];
+        return words[5] + words[6];
     }
     else
     {
         return "Not Found";
-    }  
+    }
 }
 // Return ppid
-std::string     Process::ParentPid(){
-        if (Process::Exist())
+std::string Process::ParentPid()
+{
+    if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
         return words[14];
@@ -66,42 +74,45 @@ std::string     Process::ParentPid(){
     else
     {
         return "Not Found";
-    } 
-}    
+    }
+}
 
-void            Process::SetPid(int buff_pid){
-    Process::pid=buff_pid;
+void Process::SetPid(int buff_pid)
+{
+    Process::pid = buff_pid;
 }
 // Return Cpu utilization, 100% = 1 core full load
-float           Process::CpuUtilization() {
+float Process::CpuUtilization()
+{
     if (Process::Exist())
     {
-    float s_time, delta_s_time;
-    float u_time, delta_u_time;
-    float uptime, delta_uptime;
+        float s_time, delta_s_time;
+        float u_time, delta_u_time;
+        float uptime, delta_uptime;
 
-    std::vector<std::string> stat = procfileread("stat");
-    u_time=(float)(atoi(stat[13].c_str()))/sysconf(_SC_CLK_TCK);
-    s_time=(float)(atoi(stat[14].c_str()))/sysconf(_SC_CLK_TCK);
-    uptime=(float)Process::UpTime();
+        std::vector<std::string> stat = procfileread("stat");
+        u_time = (float)(atoi(stat[13].c_str())) / sysconf(_SC_CLK_TCK);
+        s_time = (float)(atoi(stat[14].c_str())) / sysconf(_SC_CLK_TCK);
+        uptime = (float)Process::UpTime();
 
-    delta_s_time=s_time-Process::prev_s_time;
-    delta_u_time=u_time-Process::prev_u_time;
-    delta_uptime=uptime-Process::prev_uptime;
+        delta_s_time = s_time - Process::prev_s_time;
+        delta_u_time = u_time - Process::prev_u_time;
+        delta_uptime = uptime - Process::prev_uptime;
 
-    Process::prev_uptime=uptime;
-    Process::prev_u_time=u_time;
-    Process::prev_s_time=s_time;
+        Process::prev_uptime = uptime;
+        Process::prev_u_time = u_time;
+        Process::prev_s_time = s_time;
 
-    return (delta_s_time+delta_u_time)/delta_uptime;
+        return (delta_s_time + delta_u_time) / delta_uptime;
     }
     else
     {
         return 0;
     }
 }
-// Return the command that generates the process   
-std::string          Process::Command() {
+// Return the command that generates the process
+std::string Process::Command()
+{
     if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("comm");
@@ -111,29 +122,28 @@ std::string          Process::Command() {
     {
         return "Not Found";
     }
-    
 }
 // Return this process's memory utilization
-std::string          Process::Ram() {
+std::string Process::Ram()
+{
     if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
-        
+
         for (size_t i = 0; i < words.size(); i++)
         {
-            if (words[i]== "VmSize:")
+            if (words[i] == "VmSize:")
             {
                 return words[++i];
             }
-            
         }
     }
     return "Not Found";
-
 }
 // Return the user (id) that generated this process
-std::string          Process::User() {
-        if (Process::Exist())
+std::string Process::User()
+{
+    if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
         return words[19];
@@ -141,19 +151,20 @@ std::string          Process::User() {
     else
     {
         return "Not Found";
-    } 
+    }
 }
 // Return the age of this process (in seconds)
-long int        Process::UpTime() { 
-    
+long int Process::UpTime()
+{
+
     if (Process::Exist())
     {
-    long int time = 0;
-    std::vector<std::string>stat=procfileread("stat");
-    struct sysinfo info;
-    sysinfo(&info);
-    time=info.uptime-(atoi(stat[21].c_str())/sysconf(_SC_CLK_TCK));
-    return time;
+        long int time = 0;
+        std::vector<std::string> stat = procfileread("stat");
+        struct sysinfo info;
+        sysinfo(&info);
+        time = info.uptime - (atoi(stat[21].c_str()) / sysconf(_SC_CLK_TCK));
+        return time;
     }
     else
     {
@@ -161,27 +172,30 @@ long int        Process::UpTime() {
     }
 }
 // Return 1 if process exist
-bool            Process::Exist(){
+bool Process::Exist()
+{
     std::string str_pid = std::to_string(Process::pid);
-    std::string path= "/proc/" + str_pid + "/status";   ;
-    std::ifstream proc_pid_status (path.c_str(), std::ifstream::in);
-    bool file_status= (bool)proc_pid_status;
+    std::string path = "/proc/" + str_pid + "/status";
+    ;
+    std::ifstream proc_pid_status(path.c_str(), std::ifstream::in);
+    bool file_status = (bool)proc_pid_status;
     return file_status;
 }
 // Update the data saved in the process instance
-void            Process::Update(){
+void Process::Update()
+{
     if (Process::Exist())
     {
         std::vector<std::string> words = Process::procfileread("status");
         Process::name = words[1];
-        Process::status = words[5]+words[6];
+        Process::status = words[5] + words[6];
         Process::ppid = words[14];
         Process::uid = words[19];
 
         for (size_t i = 0; i < words.size(); i++)
         {
-            if (words[i]== "VmSize:") Process::ram = words[++i];
-
+            if (words[i] == "VmSize:")
+                Process::ram = words[++i];
         }
         Process::command = Process::Command();
         Process::cpu = Process::CpuUtilization();
@@ -189,20 +203,22 @@ void            Process::Update(){
     }
 }
 // Log to file
-void            Process::Log(int cycles){
+void Process::Log(int cycles)
+{
 
-    std::string filename = "P_"+std::to_string(pid)+"_Log";
-    std::ofstream Log_file (filename.c_str(), std::ofstream::out);
-    int i=0;
+    std::string filename = "P_" + std::to_string(pid) + "_Log";
+    std::ofstream Log_file(filename.c_str(), std::ofstream::out);
+    int i = 0;
     Log_file << "SyS Monitor Log File";
     Log_file << "\n PID \t CPU[%%] \t TMEM[KB] \t TIME[s]";
-    
-    while(i<cycles){
+
+    while (i < cycles)
+    {
         Process::Update();
         Log_file << "\n ";
         Log_file << std::to_string(pid).c_str();
         Log_file << "\t     ";
-        Log_file << std::to_string(Process::Read_Cpu()*100).c_str();
+        Log_file << std::to_string(Process::Read_Cpu() * 100).c_str();
         Log_file << "\t     ";
         Log_file << Process::Read_Ram().c_str();
         Log_file << "\t     ";
@@ -211,33 +227,42 @@ void            Process::Log(int cycles){
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         i++;
     }
-  std::terminate();
+    std::terminate();
 }
 
-std::string Process::Read_Name(){
+std::string Process::Read_Name()
+{
     return name;
 }
-std::string Process::Read_Parent(){
+std::string Process::Read_Parent()
+{
     return Process::ppid;
 }
-std::string Process::Read_User(){
+std::string Process::Read_User()
+{
     return Process::uid;
 }
-std::string Process::Read_Command(){
+std::string Process::Read_Command()
+{
     return Process::command;
 }
-std::string Process::Read_Ram(){
+std::string Process::Read_Ram()
+{
     return Process::ram;
 }
-std::string Process::Read_Status(){
+std::string Process::Read_Status()
+{
     return Process::status;
 }
-int         Process::Read_Pid(){
+int Process::Read_Pid()
+{
     return Process::pid;
 }
-float       Process::Read_Cpu(){
+float Process::Read_Cpu()
+{
     return Process::cpu;
 }
-long int    Process::Read_Uptime(){
+long int Process::Read_Uptime()
+{
     return Process::uptime;
 }
